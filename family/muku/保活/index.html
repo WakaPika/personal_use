@@ -440,19 +440,20 @@ function monthOffset(n) {
   d.setMonth(d.getMonth() - n);
   return d.toISOString().slice(0, 7);
 }
-// 今月・先月・先々月の3ヶ月分を初期状態として用意しておく(市の公表資料から転記しやすいように)
-const INIT_MONTHS = [monthOffset(0), monthOffset(1), monthOffset(2)];
+// 先月・先々月は市の資料が見つからなかったため、初期状態は今月分の1行のみ。
+// データが見つかったら「+ 月を追加」で追加する。
+const INIT_MONTHS = [monthOffset(0)];
 
-// 川崎市公式資料「保育所等利用申請・利用調整結果状況(宮前区)」から転記した実データ。
-// 「空き(受入可能数)」はこの資料には含まれていないため未入力のまま。
+// 川崎市公式資料「保育所等利用申請・利用調整結果状況(宮前区)」「保育所等の受入可能児童数(宮前区)」
+// (いずれも令和8年7月分)から転記した実データ。
 // 既存の入力値は上書きせず、空欄のセルのみ自動で埋める。
 const KNOWN_DATA = {
-  "inukura-kawasaki":      { "2026-07": { app0: 2, acc0: 0, app1: 1,  acc1: 0 } },
-  "inukura-nijiiro":       { "2026-07": { app0: 1, acc0: 1, app1: 0,  acc1: 0 } },
-  "tatsunoko-nohara":      { "2026-07": { app0: 7, acc0: 0, app1: 11, acc1: 1 } },
-  "manabinomori-saginuma": { "2026-07": { app1: 1, acc1: 1 } },
-  "ask-saginuma":          { "2026-07": { app0: 4, acc0: 0, app1: 2,  acc1: 0 } },
-  "berrybear-saginuma":    { "2026-07": { app1: 5, acc1: 0 } }
+  "inukura-kawasaki":      { "2026-07": { avail0: 0, avail1: 1, app0: 2, acc0: 0, app1: 1,  acc1: 0 } },
+  "inukura-nijiiro":       { "2026-07": { avail0: 1, avail1: 1, app0: 1, acc0: 1, app1: 0,  acc1: 0 } },
+  "tatsunoko-nohara":      { "2026-07": { avail0: 0, avail1: 1, app0: 7, acc0: 0, app1: 11, acc1: 1 } },
+  "manabinomori-saginuma": { "2026-07": { avail1: 3, app1: 1, acc1: 1 } },
+  "ask-saginuma":          { "2026-07": { avail0: 0, avail1: 0, app0: 4, acc0: 0, app1: 2,  acc1: 0 } },
+  "berrybear-saginuma":    { "2026-07": { avail1: 0, app1: 5, acc1: 0 } }
 };
 
 function applyKnownData(s) {
@@ -465,6 +466,24 @@ function applyKnownData(s) {
         if (r[f] === "" || r[f] == null) r[f] = String(known[f]);
       });
     });
+  });
+}
+
+// データが見つからなかった過去分(今月以外)で全項目が空欄のままの行は削除する
+function pruneEmptyPastMonths(s) {
+  const current = INIT_MONTHS[0];
+  NURSERIES.forEach(n => {
+    const recs = s.records[n.id];
+    if (!recs) return;
+    s.records[n.id] = recs.filter(r => {
+      if (r.month === current) return true;
+      const blank = ["avail0", "avail1", "app0", "acc0", "app1", "acc1"]
+        .every(f => r[f] === "" || r[f] == null);
+      return !blank;
+    });
+    if (s.records[n.id].length === 0) {
+      s.records[n.id] = [{ month: current, avail0: "", avail1: "", app0: "", acc0: "", app1: "", acc1: "" }];
+    }
   });
 }
 
@@ -496,6 +515,7 @@ function loadState() {
       s.ratings[n.id] = s.ratings?.[n.id] || { papa: 0, mama: 0 };
       s.status[n.id]  = s.status?.[n.id]  || { visit: "未", priority: "" };
     });
+    pruneEmptyPastMonths(s);
     applyKnownData(s);
     return s;
   } catch (e) { return defaultState(); }
