@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>むくの保活 | 保育園比較</title>
+<title>Mくんの保活 | 保育園比較</title>
 <style>
   :root {
     --bg: #f6f7f9;
@@ -159,8 +159,8 @@
 <body>
 
 <header>
-  <h1>🐣 むくの保活 — 保育園比較</h1>
-  <div class="sub">自宅: 宮前区犬蔵2丁目付近 ／ むく: 2025年生まれ (今年度0歳児クラス・来年度1歳児クラス)</div>
+  <h1>🐣 Mくんの保活 — 保育園比較</h1>
+  <div class="sub">自宅: 宮前区犬蔵2丁目付近 ／ Mくん: 2025年生まれ (今年度0歳児クラス・来年度1歳児クラス)</div>
 </header>
 
 <div class="banner">
@@ -204,7 +204,7 @@
   <section class="view" id="view-info">
     <div class="card infocard">
       <h2>📌 このサイトの使い方</h2>
-      <p><b>目的:</b> むくの入園申請に向けて、夫婦で保育園の情報を比較・共有するためのページです。</p>
+      <p><b>目的:</b> Mくんの入園申請に向けて、夫婦で保育園の情報を比較・共有するためのページです。</p>
       <ul>
         <li><b>一覧比較</b>: 全園をひと目で比較。並び替え・絞り込みができます。</li>
         <li><b>園の詳細</b>: 園ごとに月次の空き状況・申請数・内定数を入力し、夫婦のメモや★評価を残せます。</li>
@@ -231,7 +231,7 @@
     <div class="card infocard">
       <h2>📝 保活メモ (前提の整理)</h2>
       <ul>
-        <li>むく: <b>2025年生まれ</b> → 2026年度は<b>0歳児クラス</b>、2027年度(2027年4月〜)は<b>1歳児クラス</b>。</li>
+        <li>Mくん: <b>2025年生まれ</b> → 2026年度は<b>0歳児クラス</b>、2027年度(2027年4月〜)は<b>1歳児クラス</b>。</li>
         <li>妻の育休を延長したい → <b>不承諾通知(入所保留通知)</b>が必要。空きが少ない(=内定しにくい)園に絞って申請するのが定石。</li>
         <li>川崎市の申請先: 宮前区役所 児童家庭課 (044-856-3258)。締切は<b>利用希望月の前月10日</b>(土日祝の場合は直前の開庁日)。</li>
         <li>たまプラーザ側の3園(ろりぽっぷ・小学館アカデミー・グローバルキッズ)は<b>横浜市青葉区</b>の園。川崎市民は<b>管外(市外)申請</b>となり、申請手続き・優先順位・締切が異なるため個別確認が必要。</li>
@@ -272,15 +272,16 @@ const NURSERIES = [
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区犬蔵2-4-29",
     tel: "",
-    capTotal: "65名", cap0: "5", cap1: "12",
-    ageFrom: "要確認",
-    hours: "要確認(見学時に確認)",
+    capTotal: "65名",
+    capAge: { 0: 5, 1: 12, 2: 12, 3: 12, 4: 12, 5: 12 },
+    ageFrom: "生後5ヶ月〜",
+    hours: "平日・土曜 7:00〜20:00(休園日: 日曜・祝日・年末年始)",
     station: "鷺沼駅 徒歩15分",
     distance: "約250m・徒歩3分(概算)", distM: 250,
     opened: "2015年4月",
     url: "https://www.kidslife-nursery.com/facility/kanagawa/kawasaki/kawasakiinukura/",
     cityUrl: "https://www.city.kawasaki.jp/450/page/0000068984.html",
-    note: "自宅から最寄り候補。"
+    note: "自宅から最寄り候補。保育方針は「のびのび すくすく にこにこ」で、子どもの『やりたい』から始まる保育・チームでの保育を重視。専用の保育ICTアプリを導入しており、登降園・欠席連絡やお知らせ確認がアプリで可能。"
   },
   {
     id: "inukura-nijiiro",
@@ -288,16 +289,17 @@ const NURSERIES = [
     operator: "ライクキッズ(株)",
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区犬蔵2-24-10",
-    tel: "",
-    capTotal: "70名", cap0: "要確認", cap1: "要確認",
-    ageFrom: "生後57日〜",
-    hours: "要確認(見学時に確認)",
+    tel: "044-982-3144",
+    capTotal: "75名(定員は入所状況等により多少増減あり)",
+    capAge: { 0: 5, 1: 12, 2: 12, 3: 14, 4: 16, 5: 16 },
+    ageFrom: "生後5ヶ月〜就学前",
+    hours: "平日・土曜 7:00〜20:00",
     station: "たまプラーザ駅 徒歩20分",
     distance: "約400m・徒歩5分(概算)", distM: 400,
     opened: "2015年4月",
     url: "https://www.like-kd.co.jp/establishment/nijiiro/HPinukura",
-    cityUrl: "",
-    note: "同じ犬蔵2丁目内で近い。"
+    cityUrl: "https://www.city.kawasaki.jp/450/page/0000069385.html",
+    note: "同じ犬蔵2丁目内で近い。保護者とのコミュニケーションを重視し、家庭的な雰囲気を大切にする方針。自然との触れ合いや絵本など感性を育む遊びに注力。ICT連絡帳アプリ導入済みで、欠席・遅刻・お迎え延長連絡や日々の連絡帳をPC/タブレット/スマホから確認可能。"
   },
   {
     id: "tatsunoko-nohara",
@@ -306,15 +308,16 @@ const NURSERIES = [
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区土橋4-7-1",
     tel: "044-920-9200",
-    capTotal: "240名", cap0: "15", cap1: "36",
+    capTotal: "240名",
+    capAge: { 0: 15, 1: 36, 2: 45, 3: 48, 4: 48, 5: 48 },
     ageFrom: "要確認",
-    hours: "要確認(見学時に確認)",
+    hours: "平日〜土曜 7:00〜20:00(土曜は申込制)／短時間認定コアタイム 8:30〜16:30・延長 7:00〜8:30, 16:30〜20:00",
     station: "鷺沼駅 徒歩圏",
     distance: "約1.3km・徒歩17分(概算)", distM: 1300,
     opened: "2013年4月",
     url: "https://www.tatunokonohara9200.com/",
     cityUrl: "https://www.city.kawasaki.jp/450/page/0000050757.html",
-    note: "大規模園(定員240名)。地域子育て支援センター併設。"
+    note: "大規模園(定員240名)。地域子育て支援センター併設。保育方針は「ひとりひとりの人格を尊び、守り育てる」「協調・おもいやり・相互援助」。声楽・美術・体操の専門講師によるプログラムがあり、希望者向けにスイミング・英語・体操・ダンス等の習い事も選択可能。法人としてICT化を推進中。"
   },
   {
     id: "manabinomori-saginuma",
@@ -322,16 +325,18 @@ const NURSERIES = [
     operator: "(株)こどもの森",
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区鷺沼4-2-8",
-    tel: "",
-    capTotal: "60名", cap0: "要確認", cap1: "要確認",
-    ageFrom: "要確認",
+    tel: "044-948-5225",
+    capTotal: "40名(情報源により60名の記載もあり要確認)",
+    capAge: { 0: "受入なし", 1: "要確認", 2: "要確認", 3: "要確認", 4: "要確認", 5: "要確認" },
+    ageFrom: "1歳児クラス〜(0歳児クラスの受け入れなし)",
     hours: "月〜土 7:00〜20:00",
     station: "鷺沼駅 徒歩6分",
     distance: "約1.2km・徒歩16分(概算)", distM: 1200,
-    opened: "2022年頃(要確認)",
+    opened: "要確認",
     url: "http://kodomonomori.co.jp/nu/",
     cityUrl: "",
-    note: "園庭あり。比較的新しい園。"
+    no0: true,
+    note: "⚠ 0歳児クラスの募集がないため、今年度の申請対象からは外れる可能性が高い(来年度の1歳児クラス申請では候補になり得る)。「子どもにとって第二のおうち」を目指す保育方針。こどもの森グループの他園では連絡帳アプリ「コドモン」を導入(当園での導入状況は要確認)。園庭あり。"
   },
   {
     id: "ask-saginuma",
@@ -340,15 +345,16 @@ const NURSERIES = [
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区鷺沼1-22-6",
     tel: "044-860-2708",
-    capTotal: "60名", cap0: "6", cap1: "10",
-    ageFrom: "要確認",
-    hours: "要確認(見学時に確認)",
+    capTotal: "60名",
+    capAge: { 0: 6, 1: 10, 2: 11, 3: 11, 4: 11, 5: 11 },
+    ageFrom: "生後5ヶ月〜",
+    hours: "平日・土曜 7:00〜20:00(延長: 標準時間認定18:01〜20:00、短時間認定7:00〜8:59/17:01〜20:00)",
     station: "鷺沼駅 徒歩8分",
     distance: "約1.5km・徒歩19分(概算)", distM: 1500,
     opened: "要確認",
     url: "https://list.nihonhoiku.co.jp/nursery/detail/saginuma/",
     cityUrl: "",
-    note: ""
+    note: "保育理念は「すべてはこどもたちの笑顔のために」。食育・えいご・体操/リトミック/ダンス等の多彩なプログラムがあり、保育者向けに海外(豪州・NZ等)研修制度もあるグローバル志向の運営会社。ICT化(連絡帳アプリ等)の具体的な導入状況は公式情報に明記なく要確認。"
   },
   {
     id: "berrybear-saginuma",
@@ -357,16 +363,17 @@ const NURSERIES = [
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区鷺沼3-5-2",
     tel: "",
-    capTotal: "90名", cap0: "なし?(要確認)", cap1: "15",
+    capTotal: "90名",
+    capAge: { 0: "受入なし", 1: 15, 2: 15, 3: 20, 4: 20, 5: 20 },
     ageFrom: "1歳児クラス〜の可能性(要確認)",
-    hours: "要確認(見学時に確認)",
+    hours: "平日・土曜 7:00〜20:00",
     station: "鷺沼駅 徒歩圏",
     distance: "約1.4km・徒歩18分(概算)", distM: 1400,
     opened: "要確認",
     url: "https://ness-corpo.co.jp/nursery/saginuma/",
     cityUrl: "",
     no0: true,
-    note: "Web情報では定員に0歳児枠なし(1歳〜)。0歳で入るなら対象外の可能性大→要確認。"
+    note: "⚠ Web情報では定員に0歳児枠なし(1歳〜)。0歳で入るなら対象外の可能性大→要確認。保育方針は「無限の可能性に寄り添う主体性保育」で将来を生き抜く力を育成、SDGsに根ざした取り組みも実施。連絡帳・お便り等をアプリでやり取りでき、登降園はタッチ管理でICT化。なお近隣の「ベリーベアー鷺沼Annex」(東有馬2-35-38)は0歳児枠ありの別施設。"
   },
   {
     id: "acc-lollipop",
@@ -375,15 +382,16 @@ const NURSERIES = [
     city: "横浜市青葉区", pref: "yokohama",
     address: "横浜市青葉区美しが丘2-12-1",
     tel: "045-905-1766",
-    capTotal: "要確認", cap0: "要確認", cap1: "要確認",
-    ageFrom: "要確認",
-    hours: "要確認(見学時に確認)",
+    capTotal: "75名",
+    capAge: { 0: 3, 1: 12, 2: 15, 3: 15, 4: 15, 5: 15 },
+    ageFrom: "生後57日(2ヶ月)〜5歳児クラス",
+    hours: "平日 7:00〜20:30、土曜 7:30〜19:00(日祝休園)",
     station: "たまプラーザ駅 徒歩7分",
     distance: "約1.6km・徒歩20分(概算)", distM: 1600,
     opened: "要確認",
     url: "https://www.the0123child.com/personal/1278/",
     cityUrl: "",
-    note: "横浜市の園 → 川崎市民は管外申請。マンション1階のオープンな保育室。"
+    note: "横浜市の園 → 川崎市民は管外申請。マンション1階のオープンな保育室。「共育」(保護者・職員が共に育ちあう)を掲げ、『何を学ぶかよりどう学ぶか』を重視。専門医監修の生活リズム改善プログラム「眠育」が特色。ICTシステム「コドモン」導入済みで、睡眠見守り機能「hugsafety」によるSIDS対策も実施。"
   },
   {
     id: "shogakukan-tamaplaza",
@@ -392,15 +400,16 @@ const NURSERIES = [
     city: "横浜市青葉区", pref: "yokohama",
     address: "横浜市青葉区美しが丘2-18-8",
     tel: "",
-    capTotal: "90名", cap0: "要確認", cap1: "要確認",
-    ageFrom: "要確認",
-    hours: "要確認(見学時に確認)",
+    capTotal: "78名(情報源により90名の記載もあり要確認)",
+    capAge: { 0: "要確認", 1: "要確認", 2: "要確認", 3: "要確認", 4: "要確認", 5: "要確認" },
+    ageFrom: "生後57日(2ヶ月)〜5歳児クラス",
+    hours: "平日 7:00〜20:00、土曜 7:00〜18:00",
     station: "たまプラーザ駅 徒歩4分",
     distance: "約1.7km・徒歩21分(概算)", distM: 1700,
     opened: "要確認",
     url: "https://hoiku.shopro.co.jp/hoiku/shisetsu/tamaplaza/",
     cityUrl: "https://cgi.city.yokohama.lg.jp/kodomo/hoiku-shisetu/hdata/n0484.html",
-    note: "横浜市の園 → 川崎市民は管外申請。駅近。"
+    note: "横浜市の園 → 川崎市民は管外申請。駅近。保育理念は「あったかい心をもつ子どもに育てる」。独自プログラム「楽習保育®」で、ことば・もじ・かず・かたち・おんがくなど遊びと生活の中から得意を伸ばす。ICT導入・業務用タブレット活用済みで連絡帳アプリ対応。"
   },
   {
     id: "gkids-tamaplaza",
@@ -409,26 +418,35 @@ const NURSERIES = [
     city: "横浜市青葉区", pref: "yokohama",
     address: "横浜市青葉区美しが丘2-17-16",
     tel: "045-901-4141",
-    capTotal: "要確認", cap0: "要確認", cap1: "要確認",
-    ageFrom: "要確認",
-    hours: "要確認(見学時に確認)",
+    capTotal: "60名",
+    capAge: { 0: "要確認", 1: "要確認", 2: "要確認", 3: "要確認", 4: "要確認", 5: "要確認" },
+    ageFrom: "0歳〜5歳児クラス",
+    hours: "平日 7:30〜20:30、土曜 7:30〜19:00(延長: 平日18:31〜20:30、土曜18:31〜19:00)",
     station: "たまプラーザ駅 徒歩圏",
     distance: "約1.7km・徒歩21分(概算)", distM: 1700,
     opened: "要確認",
     url: "https://www.gkids.co.jp/facilities/nursery_064.html",
     cityUrl: "",
-    note: "横浜市の園 → 川崎市民は管外申請。"
+    note: "横浜市の園 → 川崎市民は管外申請。保育方針は「愛おしい存在として認められ、心地よくいきいきと生きる」ことを重視し、子どもの気持ちを丁寧に受けとめる保育。全社的に保育業務システム「コドモン」を導入しており、AI搭載の見守りカメラ「ベビモニ」で午睡中の危険な体勢を検知するなどICT化が進んでいる。年齢別定員の詳細は公式情報になく要確認(参考:系列の美しが丘保育園は定員62名、0歳4/1歳11/2歳11/3歳12/4歳12/5歳12)。"
   }
 ];
 
 /* ================= 保存データ ================= */
-const STORE_KEY = "hokatsu-muku-v1";
-const THIS_MONTH = new Date().toISOString().slice(0, 7);
+const STORE_KEY = "hokatsu-muku-v2";
+
+function monthOffset(n) {
+  const d = new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth() - n);
+  return d.toISOString().slice(0, 7);
+}
+// 今月・先月・先々月の3ヶ月分を初期状態として用意しておく(市の公表資料から転記しやすいように)
+const INIT_MONTHS = [monthOffset(0), monthOffset(1), monthOffset(2)];
 
 function defaultState() {
   const s = { records: {}, memos: {}, ratings: {}, status: {} };
   NURSERIES.forEach(n => {
-    s.records[n.id] = [{ month: THIS_MONTH, avail0: "", avail1: "", app0: "", acc0: "", app1: "", acc1: "" }];
+    s.records[n.id] = INIT_MONTHS.map(m => ({ month: m, avail0: "", avail1: "", app0: "", acc0: "", app1: "", acc1: "" }));
     s.memos[n.id] = [];
     s.ratings[n.id] = { papa: 0, mama: 0 };
     s.status[n.id] = { visit: "未", priority: "" };
@@ -485,6 +503,13 @@ function starHtml(count) {
   for (let i = 1; i <= 5; i++) h += `<span class="${i <= count ? "on" : "off"}" data-star="${i}">★</span>`;
   return h;
 }
+function capAt(n, age) {
+  const v = n.capAge?.[age];
+  return (v === undefined || v === null || v === "") ? "要確認" : v;
+}
+function capBreakdown(n) {
+  return [0, 1, 2, 3, 4, 5].map(a => `${a}歳:${esc(capAt(n, a))}`).join(" / ");
+}
 
 /* ================= 一覧比較 ================= */
 function renderCompare() {
@@ -530,7 +555,7 @@ function renderCompare() {
       <td>${availCell(r?.avail1)}</td>
       <td>${appAcc0}</td>
       <td>${appAcc1}</td>
-      <td>${esc(n.cap0)} / ${esc(n.cap1)}<span class="mini">全${esc(n.capTotal)}</span></td>
+      <td>${esc(capAt(n, 0))} / ${esc(capAt(n, 1))}<span class="mini">全${esc(n.capTotal)}</span></td>
       <td>👨${"★".repeat(rt.papa) || "-"}<br>👩${"★".repeat(rt.mama) || "-"}</td>
       <td>${esc(st.visit)}</td>
     </tr>`;
@@ -595,7 +620,8 @@ function renderCards() {
         <dt>住所</dt><dd>${esc(n.address)}</dd>
         <dt>自宅から</dt><dd>${esc(n.distance)}</dd>
         <dt>最寄駅</dt><dd>${esc(n.station)}</dd>
-        <dt>定員</dt><dd>全体 ${esc(n.capTotal)} ／ 0歳 <b>${esc(n.cap0)}</b> ／ 1歳 <b>${esc(n.cap1)}</b></dd>
+        <dt>定員(全体)</dt><dd>${esc(n.capTotal)}</dd>
+        <dt>年齢別定員</dt><dd>${capBreakdown(n)}</dd>
         <dt>受入月齢</dt><dd>${esc(n.ageFrom)}</dd>
         <dt>開所時間</dt><dd>${esc(n.hours)}</dd>
         <dt>開設</dt><dd>${esc(n.opened)}</dd>
