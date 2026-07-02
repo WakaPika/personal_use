@@ -326,9 +326,9 @@ const NURSERIES = [
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区鷺沼4-2-8",
     tel: "044-948-5225",
-    capTotal: "40名(情報源により60名の記載もあり要確認)",
+    capTotal: "60名(川崎市公式資料R8.7月分で確認)",
     capAge: { 0: "受入なし", 1: "要確認", 2: "要確認", 3: "要確認", 4: "要確認", 5: "要確認" },
-    ageFrom: "1歳児クラス〜(0歳児クラスの受け入れなし)",
+    ageFrom: "1歳児クラス〜(0歳児クラスの受け入れなし・市公式資料で確認済み)",
     hours: "月〜土 7:00〜20:00",
     station: "鷺沼駅 徒歩6分",
     distance: "約1.2km・徒歩16分(概算)", distM: 1200,
@@ -365,7 +365,7 @@ const NURSERIES = [
     tel: "",
     capTotal: "90名",
     capAge: { 0: "受入なし", 1: 15, 2: 15, 3: 20, 4: 20, 5: 20 },
-    ageFrom: "1歳児クラス〜の可能性(要確認)",
+    ageFrom: "1歳児クラス〜(0歳児クラスの受け入れなし・市公式資料で確認済み)",
     hours: "平日・土曜 7:00〜20:00",
     station: "鷺沼駅 徒歩圏",
     distance: "約1.4km・徒歩18分(概算)", distM: 1400,
@@ -373,7 +373,7 @@ const NURSERIES = [
     url: "https://ness-corpo.co.jp/nursery/saginuma/",
     cityUrl: "",
     no0: true,
-    note: "⚠ Web情報では定員に0歳児枠なし(1歳〜)。0歳で入るなら対象外の可能性大→要確認。保育方針は「無限の可能性に寄り添う主体性保育」で将来を生き抜く力を育成、SDGsに根ざした取り組みも実施。連絡帳・お便り等をアプリでやり取りでき、登降園はタッチ管理でICT化。なお近隣の「ベリーベアー鷺沼Annex」(東有馬2-35-38)は0歳児枠ありの別施設。"
+    note: "⚠ 0歳児クラスの募集がないことを川崎市公式資料(R8.7月分)で確認済み。今年度の0歳児申請では対象外。保育方針は「無限の可能性に寄り添う主体性保育」で将来を生き抜く力を育成、SDGsに根ざした取り組みも実施。連絡帳・お便り等をアプリでやり取りでき、登降園はタッチ管理でICT化。なお近隣の「ベリーベアー鷺沼Annex」(東有馬2-35-38)は0歳児枠ありの別施設。"
   },
   {
     id: "acc-lollipop",
@@ -443,6 +443,31 @@ function monthOffset(n) {
 // 今月・先月・先々月の3ヶ月分を初期状態として用意しておく(市の公表資料から転記しやすいように)
 const INIT_MONTHS = [monthOffset(0), monthOffset(1), monthOffset(2)];
 
+// 川崎市公式資料「保育所等利用申請・利用調整結果状況(宮前区)」から転記した実データ。
+// 「空き(受入可能数)」はこの資料には含まれていないため未入力のまま。
+// 既存の入力値は上書きせず、空欄のセルのみ自動で埋める。
+const KNOWN_DATA = {
+  "inukura-kawasaki":      { "2026-07": { app0: 2, acc0: 0, app1: 1,  acc1: 0 } },
+  "inukura-nijiiro":       { "2026-07": { app0: 1, acc0: 1, app1: 0,  acc1: 0 } },
+  "tatsunoko-nohara":      { "2026-07": { app0: 7, acc0: 0, app1: 11, acc1: 1 } },
+  "manabinomori-saginuma": { "2026-07": { app1: 1, acc1: 1 } },
+  "ask-saginuma":          { "2026-07": { app0: 4, acc0: 0, app1: 2,  acc1: 0 } },
+  "berrybear-saginuma":    { "2026-07": { app1: 5, acc1: 0 } }
+};
+
+function applyKnownData(s) {
+  Object.keys(KNOWN_DATA).forEach(id => {
+    const byMonth = KNOWN_DATA[id];
+    (s.records[id] || []).forEach(r => {
+      const known = byMonth[r.month];
+      if (!known) return;
+      Object.keys(known).forEach(f => {
+        if (r[f] === "" || r[f] == null) r[f] = String(known[f]);
+      });
+    });
+  });
+}
+
 function defaultState() {
   const s = { records: {}, memos: {}, ratings: {}, status: {} };
   NURSERIES.forEach(n => {
@@ -451,10 +476,12 @@ function defaultState() {
     s.ratings[n.id] = { papa: 0, mama: 0 };
     s.status[n.id] = { visit: "未", priority: "" };
   });
+  applyKnownData(s);
   return s;
 }
 
 let state = loadState();
+save();
 
 function loadState() {
   try {
@@ -469,6 +496,7 @@ function loadState() {
       s.ratings[n.id] = s.ratings?.[n.id] || { papa: 0, mama: 0 };
       s.status[n.id]  = s.status?.[n.id]  || { visit: "未", priority: "" };
     });
+    applyKnownData(s);
     return s;
   } catch (e) { return defaultState(); }
 }
