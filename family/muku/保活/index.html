@@ -216,6 +216,11 @@
     background: #f8fafb; border: 1px solid var(--line); border-radius: 12px;
     padding: 10px 12px; margin: 10px 0;
   }
+  .tablecap {
+    font-size: 12px; font-weight: 600; color: var(--sub);
+    margin: 0 2px 8px; line-height: 1.6;
+  }
+  .tablecap b { color: var(--accent-ink); }
 
   .toolrow { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
   .toolrow label { font-weight: 650; color: var(--sub); display: inline-flex; align-items: center; gap: 6px; }
@@ -261,6 +266,7 @@
       </label>
       <label style="font-size:13px;"><input type="checkbox" id="only0"> 0歳受入園のみ</label>
     </div>
+    <div id="cmpCap" class="tablecap"></div>
     <div class="tablewrap" id="cmpWrap"></div>
     <div id="cmpSources"></div>
     <p class="hint">
@@ -744,12 +750,15 @@ function renderCompare() {
     return months.size ? [...months].sort().pop() : "";
   })();
 
+  document.getElementById("cmpCap").innerHTML = monthLabel
+    ? `📅 空き・申請・内定は <b>${esc(fmtMonth(monthLabel))}分</b> のデータ (各園の最新入力月)`
+    : "";
   document.getElementById("cmpWrap").innerHTML = `
     <table class="cmp">
       <thead><tr>
         <th>園名</th><th>自宅から<br>(概算)</th>
-        <th>空き0歳<br><span style="font-weight:400">${esc(monthLabel)}</span></th>
-        <th>空き1歳</th>
+        <th>空き<br>0歳</th>
+        <th>空き<br>1歳</th>
         <th>申請/内定<br>0歳</th><th>申請/内定<br>1歳</th>
         <th>定員<br>0歳/1歳</th><th>評価</th><th>見学</th>
       </tr></thead>
