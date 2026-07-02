@@ -608,8 +608,22 @@ function pruneEmptyPastMonths(s) {
   });
 }
 
+// 一度だけの掃除: 初期に自動生成していた2026年5月・6月の行を削除する
+// (市の公式データが見つからなかった月のため。再度必要になったら「+ 月を追加」で追加できる)
+function cleanupLegacySeededMonths(s) {
+  if (s.legacyMonthsCleaned) return;
+  NURSERIES.forEach(n => {
+    if (!s.records[n.id]) return;
+    s.records[n.id] = s.records[n.id].filter(r => r.month !== "2026-06" && r.month !== "2026-05");
+    if (s.records[n.id].length === 0) {
+      s.records[n.id] = [{ month: INIT_MONTHS[0], avail0: "", avail1: "", app0: "", acc0: "", app1: "", acc1: "" }];
+    }
+  });
+  s.legacyMonthsCleaned = true;
+}
+
 function defaultState() {
-  const s = { records: {}, memos: {}, ratings: {}, status: {} };
+  const s = { records: {}, memos: {}, ratings: {}, status: {}, legacyMonthsCleaned: true };
   NURSERIES.forEach(n => {
     s.records[n.id] = INIT_MONTHS.map(m => ({ month: m, avail0: "", avail1: "", app0: "", acc0: "", app1: "", acc1: "" }));
     s.memos[n.id] = [];
@@ -636,6 +650,7 @@ function loadState() {
       s.ratings[n.id] = s.ratings?.[n.id] || { papa: 0, mama: 0 };
       s.status[n.id]  = s.status?.[n.id]  || { visit: "未", priority: "" };
     });
+    cleanupLegacySeededMonths(s);
     pruneEmptyPastMonths(s);
     applyKnownData(s);
     return s;
