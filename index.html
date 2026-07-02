@@ -284,6 +284,7 @@
   <!-- ============ 園の詳細 ============ -->
   <section class="view" id="view-detail">
     <div id="cards"></div>
+    <div id="detailSources"></div>
   </section>
 
   <!-- ============ 使い方・共有 ============ -->
@@ -866,7 +867,6 @@ function renderCards() {
           <button class="btn small ghost" data-addrec>＋ 月を追加</button>
           <span class="hint" style="margin:0;">市の公表PDFから転記</span>
         </div>
-        ${[...new Set((state.records[n.id] || []).map(r => r.month))].map(sourceNotesHtml).join("")}
       </details>
 
       <details class="block" open>
@@ -885,6 +885,11 @@ function renderCards() {
       </details>
     </div>`;
   }).join("");
+
+  // 全園分の月次データの出典・集計時期をタブ最下部にまとめて表示
+  const months = [...new Set(NURSERIES.flatMap(n => (state.records[n.id] || []).map(r => r.month)))]
+    .filter(Boolean).sort();
+  document.getElementById("detailSources").innerHTML = months.map(sourceNotesHtml).join("");
 }
 
 /* ================= イベント ================= */
