@@ -183,6 +183,7 @@
       <label style="font-size:13px;"><input type="checkbox" id="only0"> 0歳受入園のみ</label>
     </div>
     <div class="tablewrap" id="cmpWrap"></div>
+    <div id="cmpSources"></div>
     <p class="hint">
       💡 表は横にスクロールできます。<b>空き・申請・内定</b>は「園の詳細」タブで月ごとに入力した最新月の値を表示します。<br>
       🟢=空きあり / 🔴=空き0 (育休延長狙いなら🔴の園が候補)。
@@ -462,6 +463,26 @@ const KNOWN_DATA = {
   "gkids-tamaplaza":       { "2026-07": { avail0: 0, avail1: 2 } }
 };
 
+// 月ごとの出典と集計時期(転記したPDFの内容に合わせて毎月ここに追記する)
+const DATA_SOURCES = {
+  "2026-07": [
+    "🏙 川崎市6園の「空き」: 令和8年7月 保育所等の受入可能児童数(宮前区) — <b>令和8年6月2日調査時点</b>",
+    "🏙 川崎市6園の「申請/内定」: 令和8年7月 保育所等利用申請・利用調整結果状況(宮前区) — <b>7月利用調整分(令和8年6月10日申請締切)</b>",
+    "🌊 横浜市3園の「空き」: 横浜市 受入可能数 — <b>令和8年7月1日時点</b>(横浜市は申請/内定の公表なし。入所待ち人数は各園の特徴欄に記載)"
+  ]
+};
+
+function fmtMonth(m) {
+  const [y, mo] = String(m || "").split("-");
+  return y && mo ? `${y}年${Number(mo)}月` : m;
+}
+
+function sourceNotesHtml(month) {
+  const notes = DATA_SOURCES[month];
+  if (!notes) return "";
+  return `<p class="hint">📋 <b>${fmtMonth(month)}分データの出典・集計時期</b><br>${notes.join("<br>")}</p>`;
+}
+
 function applyKnownData(s) {
   Object.keys(KNOWN_DATA).forEach(id => {
     const byMonth = KNOWN_DATA[id];
@@ -632,6 +653,7 @@ function renderCompare() {
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
+  document.getElementById("cmpSources").innerHTML = sourceNotesHtml(monthLabel);
 }
 
 /* ================= 園の詳細カード ================= */
@@ -718,6 +740,7 @@ function renderCards() {
           <button class="btn small ghost" data-addrec>＋ 月を追加</button>
           <span class="hint" style="margin:0;">市の公表PDFから転記</span>
         </div>
+        ${[...new Set((state.records[n.id] || []).map(r => r.month))].map(sourceNotesHtml).join("")}
       </details>
 
       <details class="block" open>
