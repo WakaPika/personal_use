@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>むくの保活 | 保育園比較</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1f2a37;
+    --sub: #6b7280;
+    --line: #e5e7eb;
+    --accent: #2f6f5e;
+    --accent-soft: #e3f0ec;
+    --warn: #b45309;
+    --warn-soft: #fef3c7;
+    --bad: #b91c1c;
+    --bad-soft: #fee2e2;
+    --good: #15803d;
+    --good-soft: #dcfce7;
+    --yoko: #7c3aed;
+    --yoko-soft: #ede9fe;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    background: var(--bg); color: var(--ink);
+    font-size: 15px; line-height: 1.6;
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  }
+  header {
+    background: var(--accent); color: #fff;
+    padding: 14px 16px 10px;
+    position: sticky; top: 0; z-index: 20;
+  }
+  header h1 { margin: 0; font-size: 17px; font-weight: 700; }
+  header .sub { font-size: 12px; opacity: .85; }
+
+  .banner {
+    background: var(--warn-soft); color: var(--warn);
+    padding: 10px 16px; font-size: 13px; font-weight: 600;
+    border-bottom: 1px solid #f1e0b0;
+  }
+  .banner a { color: var(--warn); }
+
+  nav.tabs {
+    display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
+    background: #fff; border-top: 1px solid var(--line);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  nav.tabs button {
+    flex: 1; border: none; background: none; padding: 10px 4px 8px;
+    font-size: 11px; color: var(--sub); cursor: pointer;
+  }
+  nav.tabs button .ico { display: block; font-size: 20px; margin-bottom: 2px; }
+  nav.tabs button.active { color: var(--accent); font-weight: 700; }
+
+  main { padding: 12px; max-width: 760px; margin: 0 auto; }
+  section.view { display: none; }
+  section.view.active { display: block; }
+
+  .card {
+    background: var(--card); border-radius: 14px; padding: 14px;
+    margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .card h2 { margin: 0 0 2px; font-size: 16px; }
+  .card .op { font-size: 12px; color: var(--sub); }
+
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; margin-right: 4px; vertical-align: middle; }
+  .tag.kawasaki { background: var(--accent-soft); color: var(--accent); }
+  .tag.yokohama { background: var(--yoko-soft); color: var(--yoko); }
+  .tag.no0 { background: var(--bad-soft); color: var(--bad); }
+  .tag.pri { background: #fef9c3; color: #a16207; }
+  .tag.visit { background: var(--good-soft); color: var(--good); }
+
+  .kv { display: grid; grid-template-columns: 92px 1fr; gap: 2px 8px; font-size: 13px; margin-top: 8px; }
+  .kv dt { color: var(--sub); }
+  .kv dd { margin: 0; }
+  .uncertain { color: var(--warn); font-size: 12px; }
+
+  .links { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .links a {
+    font-size: 12px; text-decoration: none; color: var(--accent);
+    background: var(--accent-soft); padding: 6px 10px; border-radius: 8px; font-weight: 600;
+  }
+
+  .rowbtns { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  select, input[type="text"], input[type="month"], textarea {
+    font: inherit; font-size: 14px; padding: 6px 8px;
+    border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink);
+    max-width: 100%;
+  }
+  input.num { width: 52px; text-align: center; padding: 6px 2px; }
+  button.btn {
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    border: none; border-radius: 8px; padding: 8px 12px;
+    background: var(--accent); color: #fff;
+  }
+  button.btn.ghost { background: #eef1f4; color: var(--ink); }
+  button.btn.small { font-size: 12px; padding: 5px 10px; }
+  button.btn.danger { background: var(--bad-soft); color: var(--bad); }
+
+  .stars { font-size: 20px; letter-spacing: 2px; cursor: pointer; user-select: none; }
+  .stars .on { color: #f59e0b; }
+  .stars .off { color: #d1d5db; }
+  .ratewrap { display: flex; gap: 16px; margin-top: 8px; font-size: 13px; }
+
+  table.rec { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+  table.rec th, table.rec td { border: 1px solid var(--line); padding: 4px 3px; text-align: center; }
+  table.rec th { background: #f3f4f6; font-weight: 600; white-space: nowrap; }
+  table.rec td input { border: none; width: 100%; text-align: center; font-size: 13px; padding: 4px 0; background: transparent; }
+
+  .memo { border-top: 1px dashed var(--line); padding: 8px 0 0; margin-top: 8px; font-size: 13px; }
+  .memo .meta { font-size: 11px; color: var(--sub); }
+  .memo .who-papa { color: #1d4ed8; font-weight: 700; }
+  .memo .who-mama { color: #be185d; font-weight: 700; }
+  .memoform { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .memoform textarea { min-height: 56px; resize: vertical; }
+  .memoform .line { display: flex; gap: 8px; align-items: center; }
+
+  details.block { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+  details.block summary { font-size: 13px; font-weight: 700; cursor: pointer; color: var(--accent); }
+
+  /* 比較テーブル */
+  .tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; background: var(--card); border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  table.cmp { border-collapse: collapse; font-size: 12px; min-width: 720px; }
+  table.cmp th, table.cmp td { border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: center; white-space: nowrap; }
+  table.cmp th { background: #f3f4f6; font-weight: 600; position: sticky; top: 0; }
+  table.cmp td:first-child, table.cmp th:first-child {
+    position: sticky; left: 0; background: #fff; text-align: left;
+    max-width: 130px; white-space: normal; font-weight: 600; z-index: 1;
+    box-shadow: 2px 0 0 rgba(0,0,0,.04);
+  }
+  table.cmp th:first-child { background: #f3f4f6; z-index: 2; }
+  table.cmp td .mini { display: block; font-size: 10px; color: var(--sub); font-weight: 400; }
+  .cell-good { background: var(--good-soft); color: var(--good); font-weight: 700; }
+  .cell-bad { background: var(--bad-soft); color: var(--bad); font-weight: 700; }
+  .cell-na { color: #9ca3af; }
+
+  .hint { font-size: 12px; color: var(--sub); margin: 8px 2px; }
+  .hint b { color: var(--ink); }
+
+  .toolrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+
+  h3.sec { font-size: 14px; margin: 18px 4px 8px; color: var(--sub); }
+  .infocard p { margin: 6px 0; font-size: 13px; }
+  .infocard ul { margin: 6px 0; padding-left: 18px; font-size: 13px; }
+  textarea.io { width: 100%; min-height: 120px; font-family: ui-monospace, monospace; font-size: 11px; }
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: 8px 16px; border-radius: 999px;
+    font-size: 13px; z-index: 50; opacity: 0; transition: opacity .3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐣 むくの保活 — 保育園比較</h1>
+  <div class="sub">自宅: 宮前区犬蔵2丁目付近 ／ むく: 2025年生まれ (今年度0歳児クラス・来年度1歳児クラス)</div>
+</header>
+
+<div class="banner">
+  ⏰ 川崎市の途中入園は<b>利用開始月の前月10日</b>が申請締切(例: 8月入園→7/10)。横浜市は締切日が異なるため<a href="https://www.city.yokohama.lg.jp/kurashi/kosodate-kyoiku/hoiku-yoji/shisetsu/hoikuriyou/" target="_blank">青葉区の案内</a>で要確認。
+</div>
+
+<main>
+
+  <!-- ============ 一覧比較 ============ -->
+  <section class="view active" id="view-compare">
+    <div class="toolrow">
+      <label style="font-size:13px;">並び順:
+        <select id="sortSel">
+          <option value="priority">希望順位</option>
+          <option value="distance">自宅から近い順</option>
+          <option value="avail">空き(0歳)多い順</option>
+          <option value="rating">夫婦評価順</option>
+        </select>
+      </label>
+      <label style="font-size:13px;"><input type="checkbox" id="only0"> 0歳受入園のみ</label>
+    </div>
+    <div class="tablewrap" id="cmpWrap"></div>
+    <p class="hint">
+      💡 表は横にスクロールできます。<b>空き・申請・内定</b>は「園の詳細」タブで月ごとに入力した最新月の値を表示します。<br>
+      🟢=空きあり / 🔴=空き0 (育休延長狙いなら🔴の園が候補)。
+    </p>
+    <p class="hint">
+      公式データの確認先:
+      <a href="https://www.city.kawasaki.jp/450/page/0000030624.html" target="_blank">川崎市 受入可能数・利用調整結果</a> ／
+      <a href="https://www.city.kawasaki.jp/miyamae/page/0000047766.html" target="_blank">宮前区 保育園総合情報</a> ／
+      <a href="https://www.city.yokohama.lg.jp/aoba/kurashi/kosodate_kyoiku/hoiku/" target="_blank">横浜市青葉区 保育情報</a>
+    </p>
+  </section>
+
+  <!-- ============ 園の詳細 ============ -->
+  <section class="view" id="view-detail">
+    <div id="cards"></div>
+  </section>
+
+  <!-- ============ 使い方・共有 ============ -->
+  <section class="view" id="view-info">
+    <div class="card infocard">
+      <h2>📌 このサイトの使い方</h2>
+      <p><b>目的:</b> むくの入園申請に向けて、夫婦で保育園の情報を比較・共有するためのページです。</p>
+      <ul>
+        <li><b>一覧比較</b>: 全園をひと目で比較。並び替え・絞り込みができます。</li>
+        <li><b>園の詳細</b>: 園ごとに月次の空き状況・申請数・内定数を入力し、夫婦のメモや★評価を残せます。</li>
+        <li>入力した内容はこの端末のブラウザ(localStorage)に自動保存されます。</li>
+      </ul>
+    </div>
+
+    <div class="card infocard">
+      <h2>👨‍👩‍👧 夫婦でデータを共有する</h2>
+      <p>保存データは端末ごとに独立しています。もう一方のスマホと同期するには:</p>
+      <ul>
+        <li><b>書き出し</b> → 表示されたテキストをコピーしてLINE等で送る</li>
+        <li>受け取った側は<b>読み込み</b>欄に貼り付けて反映</li>
+      </ul>
+      <div class="rowbtns">
+        <button class="btn" id="btnExport">📤 書き出し</button>
+        <button class="btn ghost" id="btnCopy">コピー</button>
+        <button class="btn" id="btnImport">📥 読み込み(貼り付け→反映)</button>
+        <button class="btn danger" id="btnReset">全データ初期化</button>
+      </div>
+      <textarea class="io" id="ioArea" placeholder="「書き出し」を押すとここにデータが出ます。読み込む場合は相手から受け取ったテキストをここに貼り付けて「読み込み」を押してください。"></textarea>
+    </div>
+
+    <div class="card infocard">
+      <h2>📝 保活メモ (前提の整理)</h2>
+      <ul>
+        <li>むく: <b>2025年生まれ</b> → 2026年度は<b>0歳児クラス</b>、2027年度(2027年4月〜)は<b>1歳児クラス</b>。</li>
+        <li>妻の育休を延長したい → <b>不承諾通知(入所保留通知)</b>が必要。空きが少ない(=内定しにくい)園に絞って申請するのが定石。</li>
+        <li>川崎市の申請先: 宮前区役所 児童家庭課 (044-856-3258)。締切は<b>利用希望月の前月10日</b>(土日祝の場合は直前の開庁日)。</li>
+        <li>たまプラーザ側の3園(ろりぽっぷ・小学館アカデミー・グローバルキッズ)は<b>横浜市青葉区</b>の園。川崎市民は<b>管外(市外)申請</b>となり、申請手続き・優先順位・締切が異なるため個別確認が必要。</li>
+        <li>0歳児の受入月齢(生後57日〜/6ヶ月〜など)は園により違うので見学時に確認。</li>
+      </ul>
+      <p><b>毎月やること:</b> 市の公表資料(下記リンク)を見て、各園の「空き」「申請数」「内定数」を園の詳細タブに転記する。</p>
+      <ul>
+        <li><a href="https://www.city.kawasaki.jp/450/page/0000030624.html" target="_blank">川崎市: 認可保育所等の受入可能数及び利用調整結果</a> (毎月更新・区ごとのPDF)</li>
+        <li><a href="https://www.city.kawasaki.jp/miyamae/page/0000047766.html" target="_blank">宮前区: 保育園総合情報(申込方法・空き情報)</a></li>
+        <li><a href="https://www.city.yokohama.lg.jp/aoba/kurashi/kosodate_kyoiku/hoiku/" target="_blank">横浜市青葉区: 保育所等の利用案内・空き状況</a></li>
+      </ul>
+      <p class="uncertain">⚠ 定員・住所などの初期データはWeb情報をもとにした参考値です。「要確認」表記の項目や最新の受入状況は、必ず市公表資料・園見学で確認してください。</p>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabs">
+  <button data-view="view-compare" class="active"><span class="ico">📊</span>一覧比較</button>
+  <button data-view="view-detail"><span class="ico">🏫</span>園の詳細</button>
+  <button data-view="view-info"><span class="ico">⚙️</span>使い方・共有</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ================= 基本データ (Web調査に基づく参考値・要確認含む) ================= */
+// 番地は伏せ、丁目レベルの目安地点を経路検索の起点にしている(公開ページのため)
+const HOME = "神奈川県川崎市宮前区犬蔵2丁目";
+
+const NURSERIES = [
+  {
+    id: "inukura-kawasaki",
+    name: "かわさき犬蔵保育園",
+    operator: "HITOWAキッズライフ(株)",
+    city: "川崎市宮前区", pref: "kawasaki",
+    address: "川崎市宮前区犬蔵2-4-29",
+    tel: "",
+    capTotal: "65名", cap0: "5", cap1: "12",
+    ageFrom: "要確認",
+    hours: "要確認(見学時に確認)",
+    station: "鷺沼駅 徒歩15分",
+    distance: "約250m・徒歩3分(概算)", distM: 250,
+    opened: "2015年4月",
+    url: "https://www.kidslife-nursery.com/facility/kanagawa/kawasaki/kawasakiinukura/",
+    cityUrl: "https://www.city.kawasaki.jp/450/page/0000068984.html",
+    note: "自宅から最寄り候補。"
+  },
+  {
+    id: "inukura-nijiiro",
+    name: "にじいろ保育園犬蔵",
+    operator: "ライクキッズ(株)",
+    city: "川崎市宮前区", pref: "kawasaki",
+    address: "川崎市宮前区犬蔵2-24-10",
+    tel: "",
+    capTotal: "70名", cap0: "要確認", cap1: "要確認",
+    ageFrom: "生後57日〜",
+    hours: "要確認(見学時に確認)",
+    station: "たまプラーザ駅 徒歩20分",
+    distance: "約400m・徒歩5分(概算)", distM: 400,
+    opened: "2015年4月",
+    url: "https://www.like-kd.co.jp/establishment/nijiiro/HPinukura",
+    cityUrl: "",
+    note: "同じ犬蔵2丁目内で近い。"
+  },
+  {
+    id: "tatsunoko-nohara",
+    name: "たつのこのはら保育園",
+    operator: "社会福祉法人 大慈会",
+    city: "川崎市宮前区", pref: "kawasaki",
+    address: "川崎市宮前区土橋4-7-1",
+    tel: "044-920-9200",
+    capTotal: "240名", cap0: "15", cap1: "36",
+    ageFrom: "要確認",
+    hours: "要確認(見学時に確認)",
+    station: "鷺沼駅 徒歩圏",
+    distance: "約1.3km・徒歩17分(概算)", distM: 1300,
+    opened: "2013年4月",
+    url: "https://www.tatunokonohara9200.com/",
+    cityUrl: "https://www.city.kawasaki.jp/450/page/0000050757.html",
+    note: "大規模園(定員240名)。地域子育て支援センター併設。"
+  },
+  {
+    id: "manabinomori-saginuma",
+    name: "まなびの森保育園鷺沼",
+    operator: "(株)こどもの森",
+    city: "川崎市宮前区", pref: "kawasaki",
+    address: "川崎市宮前区鷺沼4-2-8",
+    tel: "",
+    capTotal: "60名", cap0: "要確認", cap1: "要確認",
+    ageFrom: "要確認",
+    hours: "月〜土 7:00〜20:00",
+    station: "鷺沼駅 徒歩6分",
+    distance: "約1.2km・徒歩16分(概算)", distM: 1200,
+    opened: "2022年頃(要確認)",
+    url: "http://kodomonomori.co.jp/nu/",
+    cityUrl: "",
+    note: "園庭あり。比較的新しい園。"
+  },
+  {
+    id: "ask-saginuma",
+    name: "アスクさぎぬま保育園",
+    operator: "(株)日本保育サービス",
+    city: "川崎市宮前区", pref: "kawasaki",
+    address: "川崎市宮前区鷺沼1-22-6",
+    tel: "044-860-2708",
+    capTotal: "60名", cap0: "6", cap1: "10",
+    ageFrom: "要確認",
+    hours: "要確認(見学時に確認)",
+    station: "鷺沼駅 徒歩8分",
+    distance: "約1.5km・徒歩19分(概算)", distM: 1500,
+    opened: "要確認",
+    url: "https://list.nihonhoiku.co.jp/nursery/detail/saginuma/",
+    cityUrl: "",
+    note: ""
+  },
+  {
+    id: "berrybear-saginuma",
+    name: "ベリーベアー鷺沼",
+    operator: "(株)ネス・コーポレーション",
+    city: "川崎市宮前区", pref: "kawasaki",
+    address: "川崎市宮前区鷺沼3-5-2",
+    tel: "",
+    capTotal: "90名", cap0: "なし?(要確認)", cap1: "15",
+    ageFrom: "1歳児クラス〜の可能性(要確認)",
+    hours: "要確認(見学時に確認)",
+    station: "鷺沼駅 徒歩圏",
+    distance: "約1.4km・徒歩18分(概算)", distM: 1400,
+    opened: "要確認",
+    url: "https://ness-corpo.co.jp/nursery/saginuma/",
+    cityUrl: "",
+    no0: true,
+    note: "Web情報では定員に0歳児枠なし(1歳〜)。0歳で入るなら対象外の可能性大→要確認。"
+  },
+  {
+    id: "acc-lollipop",
+    name: "アートチャイルドケア ろりぽっぷたまプラーザ",
+    operator: "アートチャイルドケア(株)",
+    city: "横浜市青葉区", pref: "yokohama",
+    address: "横浜市青葉区美しが丘2-12-1",
+    tel: "045-905-1766",
+    capTotal: "要確認", cap0: "要確認", cap1: "要確認",
+    ageFrom: "要確認",
+    hours: "要確認(見学時に確認)",
+    station: "たまプラーザ駅 徒歩7分",
+    distance: "約1.6km・徒歩20分(概算)", distM: 1600,
+    opened: "要確認",
+    url: "https://www.the0123child.com/personal/1278/",
+    cityUrl: "",
+    note: "横浜市の園 → 川崎市民は管外申請。マンション1階のオープンな保育室。"
+  },
+  {
+    id: "shogakukan-tamaplaza",
+    name: "小学館アカデミーたまプラーザ保育園",
+    operator: "(株)小学館集英社プロダクション",
+    city: "横浜市青葉区", pref: "yokohama",
+    address: "横浜市青葉区美しが丘2-18-8",
+    tel: "",
+    capTotal: "90名", cap0: "要確認", cap1: "要確認",
+    ageFrom: "要確認",
+    hours: "要確認(見学時に確認)",
+    station: "たまプラーザ駅 徒歩4分",
+    distance: "約1.7km・徒歩21分(概算)", distM: 1700,
+    opened: "要確認",
+    url: "https://hoiku.shopro.co.jp/hoiku/shisetsu/tamaplaza/",
+    cityUrl: "https://cgi.city.yokohama.lg.jp/kodomo/hoiku-shisetu/hdata/n0484.html",
+    note: "横浜市の園 → 川崎市民は管外申請。駅近。"
+  },
+  {
+    id: "gkids-tamaplaza",
+    name: "グローバルキッズたまプラーザ保育園",
+    operator: "(株)グローバルキッズ",
+    city: "横浜市青葉区", pref: "yokohama",
+    address: "横浜市青葉区美しが丘2-17-16",
+    tel: "045-901-4141",
+    capTotal: "要確認", cap0: "要確認", cap1: "要確認",
+    ageFrom: "要確認",
+    hours: "要確認(見学時に確認)",
+    station: "たまプラーザ駅 徒歩圏",
+    distance: "約1.7km・徒歩21分(概算)", distM: 1700,
+    opened: "要確認",
+    url: "https://www.gkids.co.jp/facilities/nursery_064.html",
+    cityUrl: "",
+    note: "横浜市の園 → 川崎市民は管外申請。"
+  }
+];
+
+/* ================= 保存データ ================= */
+const STORE_KEY = "hokatsu-muku-v1";
+const THIS_MONTH = new Date().toISOString().slice(0, 7);
+
+function defaultState() {
+  const s = { records: {}, memos: {}, ratings: {}, status: {} };
+  NURSERIES.forEach(n => {
+    s.records[n.id] = [{ month: THIS_MONTH, avail0: "", avail1: "", app0: "", acc0: "", app1: "", acc1: "" }];
+    s.memos[n.id] = [];
+    s.ratings[n.id] = { papa: 0, mama: 0 };
+    s.status[n.id] = { visit: "未", priority: "" };
+  });
+  return s;
+}
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return defaultState();
+    const s = JSON.parse(raw);
+    const d = defaultState();
+    // 園の増減に耐えるようマージ
+    NURSERIES.forEach(n => {
+      s.records[n.id] = s.records?.[n.id] || d.records[n.id];
+      s.memos[n.id]   = s.memos?.[n.id]   || [];
+      s.ratings[n.id] = s.ratings?.[n.id] || { papa: 0, mama: 0 };
+      s.status[n.id]  = s.status?.[n.id]  || { visit: "未", priority: "" };
+    });
+    return s;
+  } catch (e) { return defaultState(); }
+}
+
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1600);
+}
+
+/* ================= ユーティリティ ================= */
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c])); }
+function mapsUrl(n) {
+  return "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(HOME) +
+         "&destination=" + encodeURIComponent(n.address) + "&travelmode=walking";
+}
+function latestRec(id) {
+  const recs = (state.records[id] || []).filter(r => r.month);
+  if (!recs.length) return null;
+  return recs.slice().sort((a, b) => a.month < b.month ? 1 : -1)[0];
+}
+function availCell(v) {
+  if (v === "" || v == null) return '<span class="cell-na">未入力</span>';
+  const num = Number(v);
+  if (!isNaN(num)) return num > 0 ? `<span>🟢 ${num}</span>` : `<span>🔴 0</span>`;
+  return esc(v);
+}
+function starHtml(count) {
+  let h = "";
+  for (let i = 1; i <= 5; i++) h += `<span class="${i <= count ? "on" : "off"}" data-star="${i}">★</span>`;
+  return h;
+}
+
+/* ================= 一覧比較 ================= */
+function renderCompare() {
+  const sortBy = document.getElementById("sortSel").value;
+  const only0 = document.getElementById("only0").checked;
+
+  let list = NURSERIES.slice();
+  if (only0) list = list.filter(n => !n.no0);
+
+  list.sort((a, b) => {
+    if (sortBy === "distance") return a.distM - b.distM;
+    if (sortBy === "rating") {
+      const ra = state.ratings[a.id], rb = state.ratings[b.id];
+      return (rb.papa + rb.mama) - (ra.papa + ra.mama);
+    }
+    if (sortBy === "avail") {
+      const va = Number(latestRec(a.id)?.avail0), vb = Number(latestRec(b.id)?.avail0);
+      return (isNaN(vb) ? -1 : vb) - (isNaN(va) ? -1 : va);
+    }
+    // priority
+    const pa = state.status[a.id].priority, pb = state.status[b.id].priority;
+    if (pa && pb) return Number(pa) - Number(pb);
+    if (pa) return -1;
+    if (pb) return 1;
+    return a.distM - b.distM;
+  });
+
+  let rows = list.map(n => {
+    const r = latestRec(n.id);
+    const st = state.status[n.id];
+    const rt = state.ratings[n.id];
+    const pri = st.priority ? `<span class="tag pri">第${esc(st.priority)}希望</span>` : "";
+    const cityTag = n.pref === "yokohama"
+      ? '<span class="tag yokohama">横浜市/管外</span>'
+      : '<span class="tag kawasaki">川崎市</span>';
+    const no0 = n.no0 ? '<span class="tag no0">0歳なし?</span>' : "";
+    const appAcc0 = r && (r.app0 !== "" || r.acc0 !== "") ? `${esc(r.app0 || "-")} / ${esc(r.acc0 || "-")}` : '<span class="cell-na">未入力</span>';
+    const appAcc1 = r && (r.app1 !== "" || r.acc1 !== "") ? `${esc(r.app1 || "-")} / ${esc(r.acc1 || "-")}` : '<span class="cell-na">未入力</span>';
+    return `<tr>
+      <td>${esc(n.name)}<span class="mini">${pri}${cityTag}${no0}</span></td>
+      <td>${esc(n.distance.replace(/[(（]概算[)）]/, ""))}<span class="mini"><a href="${mapsUrl(n)}" target="_blank">経路🗺</a></span></td>
+      <td>${availCell(r?.avail0)}</td>
+      <td>${availCell(r?.avail1)}</td>
+      <td>${appAcc0}</td>
+      <td>${appAcc1}</td>
+      <td>${esc(n.cap0)} / ${esc(n.cap1)}<span class="mini">全${esc(n.capTotal)}</span></td>
+      <td>👨${"★".repeat(rt.papa) || "-"}<br>👩${"★".repeat(rt.mama) || "-"}</td>
+      <td>${esc(st.visit)}</td>
+    </tr>`;
+  }).join("");
+
+  const monthLabel = (() => {
+    const months = new Set();
+    NURSERIES.forEach(n => { const r = latestRec(n.id); if (r) months.add(r.month); });
+    return months.size ? [...months].sort().pop() : "";
+  })();
+
+  document.getElementById("cmpWrap").innerHTML = `
+    <table class="cmp">
+      <thead><tr>
+        <th>園名</th><th>自宅から<br>(概算)</th>
+        <th>空き0歳<br><span style="font-weight:400">${esc(monthLabel)}</span></th>
+        <th>空き1歳</th>
+        <th>申請/内定<br>0歳</th><th>申請/内定<br>1歳</th>
+        <th>定員<br>0歳/1歳</th><th>評価</th><th>見学</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+/* ================= 園の詳細カード ================= */
+function renderCards() {
+  const wrap = document.getElementById("cards");
+  wrap.innerHTML = NURSERIES.map(n => {
+    const st = state.status[n.id];
+    const rt = state.ratings[n.id];
+    const cityTag = n.pref === "yokohama"
+      ? '<span class="tag yokohama">横浜市青葉区・管外申請</span>'
+      : '<span class="tag kawasaki">川崎市宮前区</span>';
+    const no0 = n.no0 ? '<span class="tag no0">0歳受入なし?要確認</span>' : "";
+    const priTag = st.priority ? `<span class="tag pri">第${esc(st.priority)}希望</span>` : "";
+    const visitTag = st.visit !== "未" ? `<span class="tag visit">${esc(st.visit)}</span>` : "";
+
+    const recRows = (state.records[n.id] || []).map((r, i) => `
+      <tr data-rec="${i}">
+        <td><input type="month" value="${esc(r.month)}" data-f="month" style="width:110px;font-size:11px;"></td>
+        <td><input inputmode="numeric" value="${esc(r.avail0)}" data-f="avail0" placeholder="-"></td>
+        <td><input inputmode="numeric" value="${esc(r.avail1)}" data-f="avail1" placeholder="-"></td>
+        <td><input inputmode="numeric" value="${esc(r.app0)}" data-f="app0" placeholder="-"></td>
+        <td><input inputmode="numeric" value="${esc(r.acc0)}" data-f="acc0" placeholder="-"></td>
+        <td><input inputmode="numeric" value="${esc(r.app1)}" data-f="app1" placeholder="-"></td>
+        <td><input inputmode="numeric" value="${esc(r.acc1)}" data-f="acc1" placeholder="-"></td>
+      </tr>`).join("");
+
+    const memos = (state.memos[n.id] || []).map((m, i) => `
+      <div class="memo">
+        <span class="meta"><span class="${m.author === "👨パパ" ? "who-papa" : "who-mama"}">${esc(m.author)}</span> ・ ${esc(m.date)}
+          <button class="btn small danger" data-delmemo="${i}" style="float:right;">削除</button></span><br>
+        ${esc(m.text).replace(/\n/g, "<br>")}
+      </div>`).join("") || '<p class="hint">まだメモはありません。</p>';
+
+    return `<div class="card" data-id="${n.id}">
+      <h2>${esc(n.name)}</h2>
+      <div class="op">${esc(n.operator)}</div>
+      <div style="margin-top:6px;">${priTag}${cityTag}${no0}${visitTag}</div>
+
+      <dl class="kv">
+        <dt>住所</dt><dd>${esc(n.address)}</dd>
+        <dt>自宅から</dt><dd>${esc(n.distance)}</dd>
+        <dt>最寄駅</dt><dd>${esc(n.station)}</dd>
+        <dt>定員</dt><dd>全体 ${esc(n.capTotal)} ／ 0歳 <b>${esc(n.cap0)}</b> ／ 1歳 <b>${esc(n.cap1)}</b></dd>
+        <dt>受入月齢</dt><dd>${esc(n.ageFrom)}</dd>
+        <dt>開所時間</dt><dd>${esc(n.hours)}</dd>
+        <dt>開設</dt><dd>${esc(n.opened)}</dd>
+        ${n.tel ? `<dt>電話</dt><dd><a href="tel:${esc(n.tel)}">${esc(n.tel)}</a></dd>` : ""}
+        ${n.note ? `<dt>特徴</dt><dd>${esc(n.note)}</dd>` : ""}
+      </dl>
+
+      <div class="links">
+        <a href="${esc(n.url)}" target="_blank">公式サイト</a>
+        ${n.cityUrl ? `<a href="${esc(n.cityUrl)}" target="_blank">自治体ページ</a>` : ""}
+        <a href="${mapsUrl(n)}" target="_blank">🗺 自宅からの経路</a>
+      </div>
+
+      <div class="rowbtns">
+        <label style="font-size:13px;">希望順位:
+          <select data-set="priority">
+            <option value="">未定</option>
+            ${[1,2,3,4,5,6,7,8,9].map(i => `<option value="${i}" ${String(st.priority) === String(i) ? "selected" : ""}>第${i}希望</option>`).join("")}
+          </select>
+        </label>
+        <label style="font-size:13px;">見学:
+          <select data-set="visit">
+            ${["未", "予約済", "見学済", "見送り"].map(v => `<option ${st.visit === v ? "selected" : ""}>${v}</option>`).join("")}
+          </select>
+        </label>
+      </div>
+
+      <div class="ratewrap">
+        <div>👨パパ <span class="stars" data-rate="papa">${starHtml(rt.papa)}</span></div>
+        <div>👩ママ <span class="stars" data-rate="mama">${starHtml(rt.mama)}</span></div>
+      </div>
+
+      <details class="block" open>
+        <summary>📈 月次データ (空き / 申請 / 内定)</summary>
+        <table class="rec">
+          <thead><tr><th>月</th><th>空き<br>0歳</th><th>空き<br>1歳</th><th>申請<br>0歳</th><th>内定<br>0歳</th><th>申請<br>1歳</th><th>内定<br>1歳</th></tr></thead>
+          <tbody>${recRows}</tbody>
+        </table>
+        <div class="rowbtns">
+          <button class="btn small ghost" data-addrec>＋ 月を追加</button>
+          <span class="hint" style="margin:0;">市の公表PDFから転記</span>
+        </div>
+      </details>
+
+      <details class="block" open>
+        <summary>💬 夫婦のメモ (${(state.memos[n.id] || []).length}件)</summary>
+        ${memos}
+        <div class="memoform">
+          <div class="line">
+            <select data-memoauthor>
+              <option>👨パパ</option>
+              <option>👩ママ</option>
+            </select>
+            <button class="btn small" data-addmemo>メモを追加</button>
+          </div>
+          <textarea data-memotext placeholder="見学の感想、気になった点、先生の雰囲気など…"></textarea>
+        </div>
+      </details>
+    </div>`;
+  }).join("");
+}
+
+/* ================= イベント ================= */
+document.querySelectorAll("nav.tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("nav.tabs button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("section.view").forEach(v => v.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.view).classList.add("active");
+    window.scrollTo(0, 0);
+  });
+});
+
+document.getElementById("sortSel").addEventListener("change", renderCompare);
+document.getElementById("only0").addEventListener("change", renderCompare);
+
+document.getElementById("cards").addEventListener("click", e => {
+  const card = e.target.closest(".card");
+  if (!card) return;
+  const id = card.dataset.id;
+
+  const star = e.target.closest("[data-star]");
+  if (star) {
+    const who = star.parentElement.dataset.rate;
+    const val = Number(star.dataset.star);
+    state.ratings[id][who] = state.ratings[id][who] === val ? 0 : val;
+    save(); renderAll(); return;
+  }
+  if (e.target.closest("[data-addrec]")) {
+    state.records[id].push({ month: "", avail0: "", avail1: "", app0: "", acc0: "", app1: "", acc1: "" });
+    save(); renderAll(); return;
+  }
+  if (e.target.closest("[data-addmemo]")) {
+    const ta = card.querySelector("[data-memotext]");
+    const author = card.querySelector("[data-memoauthor]").value;
+    const text = ta.value.trim();
+    if (!text) { toast("メモが空です"); return; }
+    const d = new Date();
+    state.memos[id].push({ author, date: `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`, text });
+    save(); renderAll(); toast("メモを追加しました"); return;
+  }
+  const del = e.target.closest("[data-delmemo]");
+  if (del) {
+    if (confirm("このメモを削除しますか?")) {
+      state.memos[id].splice(Number(del.dataset.delmemo), 1);
+      save(); renderAll();
+    }
+    return;
+  }
+});
+
+document.getElementById("cards").addEventListener("change", e => {
+  const card = e.target.closest(".card");
+  if (!card) return;
+  const id = card.dataset.id;
+
+  if (e.target.dataset.set) {
+    state.status[id][e.target.dataset.set] = e.target.value;
+    save(); renderCompare(); renderCardTagsOnly(); return;
+  }
+  const tr = e.target.closest("tr[data-rec]");
+  if (tr && e.target.dataset.f) {
+    state.records[id][Number(tr.dataset.rec)][e.target.dataset.f] = e.target.value;
+    save(); renderCompare(); return;
+  }
+});
+
+// select変更のたびにカード全再描画すると入力中のメモが消えるため、タグのみ更新
+function renderCardTagsOnly() { /* 軽量化: 次回の全再描画時に反映される */ }
+
+/* ================= 書き出し / 読み込み ================= */
+document.getElementById("btnExport").addEventListener("click", () => {
+  document.getElementById("ioArea").value = JSON.stringify(state);
+  toast("書き出しました。コピーして共有してください");
+});
+document.getElementById("btnCopy").addEventListener("click", async () => {
+  const v = document.getElementById("ioArea").value || JSON.stringify(state);
+  document.getElementById("ioArea").value = v;
+  try { await navigator.clipboard.writeText(v); toast("コピーしました"); }
+  catch (e) { document.getElementById("ioArea").select(); toast("長押しでコピーしてください"); }
+});
+document.getElementById("btnImport").addEventListener("click", () => {
+  const v = document.getElementById("ioArea").value.trim();
+  if (!v) { toast("貼り付けてから押してください"); return; }
+  try {
+    const s = JSON.parse(v);
+    if (!s.records || !s.memos) throw new Error("format");
+    if (!confirm("この端末のデータを読み込んだ内容で上書きします。よろしいですか?")) return;
+    localStorage.setItem(STORE_KEY, JSON.stringify(s));
+    state = loadState(); save(); renderAll(); toast("読み込みました");
+  } catch (e) { toast("読み込めませんでした(形式エラー)"); }
+});
+document.getElementById("btnReset").addEventListener("click", () => {
+  if (confirm("メモ・評価・月次データを全て消して初期状態に戻します。よろしいですか?")) {
+    localStorage.removeItem(STORE_KEY);
+    state = defaultState(); save(); renderAll(); toast("初期化しました");
+  }
+});
+
+/* ================= 初期描画 ================= */
+function renderAll() { renderCompare(); renderCards(); }
+renderAll();
+</script>
+</body>
+</html>
