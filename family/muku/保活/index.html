@@ -6,152 +6,231 @@
 <title>Mくんの保活 | 保育園比較</title>
 <style>
   :root {
-    --bg: #f6f7f9;
+    --bg: #f2f4f7;
     --card: #ffffff;
-    --ink: #1f2a37;
-    --sub: #6b7280;
-    --line: #e5e7eb;
-    --accent: #2f6f5e;
-    --accent-soft: #e3f0ec;
-    --warn: #b45309;
-    --warn-soft: #fef3c7;
-    --bad: #b91c1c;
-    --bad-soft: #fee2e2;
-    --good: #15803d;
-    --good-soft: #dcfce7;
-    --yoko: #7c3aed;
-    --yoko-soft: #ede9fe;
+    --ink: #101828;
+    --sub: #667085;
+    --faint: #98a2b3;
+    --line: #eaecf0;
+    --accent: #0e7364;
+    --accent-ink: #0b5d51;
+    --accent-soft: #e6f4f1;
+    --warn: #b54708;
+    --warn-soft: #fdf3e7;
+    --bad: #b42318;
+    --bad-soft: #fee4e2;
+    --good: #067647;
+    --good-soft: #dcfae6;
+    --yoko: #6941c6;
+    --yoko-soft: #f0ebfc;
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 2px 10px rgba(16,24,40,.05);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
     background: var(--bg); color: var(--ink);
-    font-size: 15px; line-height: 1.6;
-    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    font-size: 15px; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: calc(78px + env(safe-area-inset-bottom));
   }
+
+  /* ---------- ヘッダー ---------- */
   header {
-    background: var(--accent); color: #fff;
-    padding: 14px 16px 10px;
+    background: linear-gradient(135deg, #0b6154 0%, #0e7364 55%, #178a4c 130%);
+    color: #fff;
+    padding: 18px 18px 14px;
     position: sticky; top: 0; z-index: 20;
+    box-shadow: 0 2px 14px rgba(11,97,84,.28);
   }
-  header h1 { margin: 0; font-size: 17px; font-weight: 700; }
-  header .sub { font-size: 12px; opacity: .85; }
+  header h1 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: .01em; }
+  header .sub { font-size: 11.5px; opacity: .82; margin-top: 3px; line-height: 1.5; }
 
   .banner {
     background: var(--warn-soft); color: var(--warn);
-    padding: 10px 16px; font-size: 13px; font-weight: 600;
-    border-bottom: 1px solid #f1e0b0;
+    padding: 10px 18px; font-size: 12.5px; font-weight: 600; line-height: 1.65;
   }
-  .banner a { color: var(--warn); }
+  .banner a { color: var(--warn); font-weight: 700; }
 
+  /* ---------- 下部タブ ---------- */
   nav.tabs {
     display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
-    background: #fff; border-top: 1px solid var(--line);
-    padding-bottom: env(safe-area-inset-bottom);
+    background: rgba(255,255,255,.88);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    backdrop-filter: saturate(180%) blur(16px);
+    border-top: 1px solid rgba(16,24,40,.07);
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+    gap: 6px;
   }
   nav.tabs button {
-    flex: 1; border: none; background: none; padding: 10px 4px 8px;
-    font-size: 11px; color: var(--sub); cursor: pointer;
+    flex: 1; border: none; background: none; padding: 7px 4px 6px;
+    font-size: 11px; font-weight: 700; color: var(--faint); cursor: pointer;
+    border-radius: 12px; transition: background .15s, color .15s;
   }
-  nav.tabs button .ico { display: block; font-size: 20px; margin-bottom: 2px; }
-  nav.tabs button.active { color: var(--accent); font-weight: 700; }
+  nav.tabs button .ico { display: block; font-size: 21px; margin-bottom: 1px; filter: grayscale(40%); opacity: .72; }
+  nav.tabs button.active { color: var(--accent-ink); background: var(--accent-soft); }
+  nav.tabs button.active .ico { filter: none; opacity: 1; }
 
-  main { padding: 12px; max-width: 760px; margin: 0 auto; }
+  main { padding: 14px 14px 6px; max-width: 760px; margin: 0 auto; }
   section.view { display: none; }
-  section.view.active { display: block; }
+  section.view.active { display: block; animation: fadein .18s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
+  /* ---------- カード ---------- */
   .card {
-    background: var(--card); border-radius: 14px; padding: 14px;
-    margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    background: var(--card); border-radius: var(--radius); padding: 16px;
+    margin-bottom: 14px; box-shadow: var(--shadow);
   }
-  .card h2 { margin: 0 0 2px; font-size: 16px; }
-  .card .op { font-size: 12px; color: var(--sub); }
+  .card h2 { margin: 0; font-size: 16.5px; font-weight: 750; letter-spacing: .01em; line-height: 1.5; }
+  .card .op { font-size: 12px; color: var(--sub); margin-top: 1px; }
 
-  .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; margin-right: 4px; vertical-align: middle; }
-  .tag.kawasaki { background: var(--accent-soft); color: var(--accent); }
+  /* ---------- タグ ---------- */
+  .tag {
+    display: inline-flex; align-items: center; gap: 4.5px;
+    font-size: 10.5px; font-weight: 700; padding: 2.5px 9px;
+    border-radius: 999px; margin: 0 4px 4px 0; vertical-align: middle;
+    letter-spacing: .01em; white-space: nowrap;
+  }
+  .tag::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .65; flex: none; }
+  .tag.kawasaki { background: var(--accent-soft); color: var(--accent-ink); }
   .tag.yokohama { background: var(--yoko-soft); color: var(--yoko); }
   .tag.no0 { background: var(--bad-soft); color: var(--bad); }
-  .tag.pri { background: #fef9c3; color: #a16207; }
+  .tag.pri { background: #fef7c3; color: #a15c07; }
   .tag.visit { background: var(--good-soft); color: var(--good); }
 
-  .kv { display: grid; grid-template-columns: 92px 1fr; gap: 2px 8px; font-size: 13px; margin-top: 8px; }
-  .kv dt { color: var(--sub); }
-  .kv dd { margin: 0; }
+  /* ---------- バッジ (空き状況など) ---------- */
+  .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 30px; padding: 3px 9px; border-radius: 999px;
+    font-weight: 800; font-size: 12.5px; font-variant-numeric: tabular-nums;
+    line-height: 1.4;
+  }
+  .badge.ok { background: var(--good-soft); color: var(--good); }
+  .badge.zero { background: var(--bad-soft); color: var(--bad); }
+  .badge.na { background: #f2f4f7; color: var(--faint); font-weight: 600; font-size: 11.5px; }
+
+  /* ---------- 基本情報 ---------- */
+  .kv { display: grid; grid-template-columns: 88px 1fr; gap: 7px 12px; font-size: 13.5px; margin-top: 12px; }
+  .kv dt { color: var(--faint); font-size: 12px; padding-top: 1.5px; }
+  .kv dd { margin: 0; overflow-wrap: anywhere; }
   .uncertain { color: var(--warn); font-size: 12px; }
 
-  .links { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
   .links a {
-    font-size: 12px; text-decoration: none; color: var(--accent);
-    background: var(--accent-soft); padding: 6px 10px; border-radius: 8px; font-weight: 600;
+    font-size: 12.5px; text-decoration: none; color: var(--accent-ink);
+    background: var(--accent-soft); padding: 8px 13px; border-radius: 10px; font-weight: 700;
   }
 
-  .rowbtns { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .rowbtns { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
   select, input[type="text"], input[type="month"], textarea {
-    font: inherit; font-size: 14px; padding: 6px 8px;
-    border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink);
+    font: inherit; font-size: 14px; padding: 8px 10px;
+    border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink);
     max-width: 100%;
   }
-  input.num { width: 52px; text-align: center; padding: 6px 2px; }
-  button.btn {
-    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
-    border: none; border-radius: 8px; padding: 8px 12px;
-    background: var(--accent); color: #fff;
+  select:focus, input:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(14,115,100,.13);
   }
-  button.btn.ghost { background: #eef1f4; color: var(--ink); }
-  button.btn.small { font-size: 12px; padding: 5px 10px; }
-  button.btn.danger { background: var(--bad-soft); color: var(--bad); }
+  button.btn {
+    font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
+    border: none; border-radius: 10px; padding: 9px 14px;
+    background: var(--accent); color: #fff;
+    box-shadow: 0 1px 2px rgba(16,24,40,.12);
+    transition: filter .15s, transform .06s;
+  }
+  button.btn:active { transform: scale(.97); }
+  button.btn.ghost { background: #eef1f4; color: var(--ink); box-shadow: none; }
+  button.btn.small { font-size: 12px; padding: 6px 11px; }
+  button.btn.danger { background: var(--bad-soft); color: var(--bad); box-shadow: none; }
 
-  .stars { font-size: 20px; letter-spacing: 2px; cursor: pointer; user-select: none; }
+  .stars { font-size: 22px; letter-spacing: 3px; cursor: pointer; user-select: none; }
   .stars .on { color: #f59e0b; }
-  .stars .off { color: #d1d5db; }
-  .ratewrap { display: flex; gap: 16px; margin-top: 8px; font-size: 13px; }
+  .stars .off { color: #d0d5dd; }
+  .ratewrap { display: flex; gap: 18px; margin-top: 10px; font-size: 13px; align-items: center; }
 
-  table.rec { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
-  table.rec th, table.rec td { border: 1px solid var(--line); padding: 4px 3px; text-align: center; }
-  table.rec th { background: #f3f4f6; font-weight: 600; white-space: nowrap; }
-  table.rec td input { border: none; width: 100%; text-align: center; font-size: 13px; padding: 4px 0; background: transparent; }
+  /* ---------- 月次データ表 ---------- */
+  table.rec { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; margin-top: 8px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  table.rec th, table.rec td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 5px 3px; text-align: center; }
+  table.rec th:last-child, table.rec td:last-child { border-right: none; }
+  table.rec tbody tr:last-child td { border-bottom: none; }
+  table.rec th { background: #f8fafb; font-weight: 700; color: var(--sub); font-size: 10.5px; white-space: nowrap; line-height: 1.4; }
+  table.rec td input { border: none; width: 100%; text-align: center; font-size: 13.5px; padding: 7px 0; background: transparent; font-variant-numeric: tabular-nums; border-radius: 0; }
+  table.rec td input:focus { background: var(--accent-soft); box-shadow: none; }
 
-  .memo { border-top: 1px dashed var(--line); padding: 8px 0 0; margin-top: 8px; font-size: 13px; }
-  .memo .meta { font-size: 11px; color: var(--sub); }
-  .memo .who-papa { color: #1d4ed8; font-weight: 700; }
-  .memo .who-mama { color: #be185d; font-weight: 700; }
-  .memoform { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-  .memoform textarea { min-height: 56px; resize: vertical; }
+  /* ---------- メモ ---------- */
+  .memo {
+    background: #f8fafb; border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 12px; margin-top: 8px; font-size: 13px;
+  }
+  .memo .meta { font-size: 11px; color: var(--sub); display: block; margin-bottom: 2px; }
+  .memo .who-papa { color: #1d4ed8; font-weight: 800; }
+  .memo .who-mama { color: #be185d; font-weight: 800; }
+  .memoform { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .memoform textarea { min-height: 60px; resize: vertical; }
   .memoform .line { display: flex; gap: 8px; align-items: center; }
 
-  details.block { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
-  details.block summary { font-size: 13px; font-weight: 700; cursor: pointer; color: var(--accent); }
-
-  /* 比較テーブル */
-  .tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; background: var(--card); border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
-  table.cmp { border-collapse: collapse; font-size: 12px; min-width: 720px; }
-  table.cmp th, table.cmp td { border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: center; white-space: nowrap; }
-  table.cmp th { background: #f3f4f6; font-weight: 600; position: sticky; top: 0; }
-  table.cmp td:first-child, table.cmp th:first-child {
-    position: sticky; left: 0; background: #fff; text-align: left;
-    max-width: 130px; white-space: normal; font-weight: 600; z-index: 1;
-    box-shadow: 2px 0 0 rgba(0,0,0,.04);
+  details.block { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+  details.block summary {
+    font-size: 13.5px; font-weight: 750; cursor: pointer; color: var(--accent-ink);
+    list-style: none; display: flex; align-items: center; gap: 6px;
   }
-  table.cmp th:first-child { background: #f3f4f6; z-index: 2; }
-  table.cmp td .mini { display: block; font-size: 10px; color: var(--sub); font-weight: 400; }
-  .cell-good { background: var(--good-soft); color: var(--good); font-weight: 700; }
-  .cell-bad { background: var(--bad-soft); color: var(--bad); font-weight: 700; }
-  .cell-na { color: #9ca3af; }
+  details.block summary::-webkit-details-marker { display: none; }
+  details.block summary::after { content: "▾"; margin-left: auto; color: var(--faint); font-size: 12px; transition: transform .15s; }
+  details.block:not([open]) summary::after { transform: rotate(-90deg); }
 
-  .hint { font-size: 12px; color: var(--sub); margin: 8px 2px; }
+  /* ---------- 比較テーブル ---------- */
+  .tablewrap {
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+  table.cmp { border-collapse: separate; border-spacing: 0; font-size: 12.5px; min-width: 780px; width: 100%; }
+  table.cmp th, table.cmp td {
+    padding: 10px 8px; text-align: center; white-space: nowrap;
+    border-bottom: 1px solid var(--line); vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+  }
+  table.cmp thead th {
+    background: #f8fafb; color: var(--sub); font-size: 10.5px; font-weight: 700;
+    letter-spacing: .02em; line-height: 1.4; padding: 9px 8px;
+    position: sticky; top: 0; z-index: 2;
+  }
+  table.cmp tbody tr:last-child td { border-bottom: none; }
+  table.cmp td:first-child, table.cmp th:first-child {
+    position: sticky; left: 0; z-index: 1; text-align: left;
+    background: #fff;
+    min-width: 112px; max-width: 132px; white-space: normal;
+    box-shadow: 4px 0 8px -6px rgba(16,24,40,.2);
+  }
+  table.cmp th:first-child { background: #f8fafb; z-index: 3; }
+  table.cmp td:first-child { font-weight: 750; font-size: 12.5px; line-height: 1.45; }
+  table.cmp td .mini { display: block; font-size: 10px; color: var(--faint); font-weight: 500; margin-top: 3px; line-height: 1.6; white-space: normal; }
+  table.cmp td:first-child .mini { margin-top: 6px; }
+  table.cmp .mini a { color: var(--accent-ink); font-weight: 700; text-decoration: none; }
+  table.cmp td b { font-weight: 800; }
+
+  .hint { font-size: 12px; color: var(--sub); margin: 10px 2px; line-height: 1.8; }
   .hint b { color: var(--ink); }
+  .hint .badge { min-width: 24px; padding: 1px 7px; font-size: 11px; vertical-align: 1px; }
+  .hint.sources {
+    background: #f8fafb; border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 12px; margin: 10px 0;
+  }
 
-  .toolrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+  .toolrow { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .toolrow label { font-weight: 650; color: var(--sub); display: inline-flex; align-items: center; gap: 6px; }
+  .toolrow select { padding: 7px 10px; font-weight: 650; font-size: 13px; }
+  .toolrow input[type="checkbox"] { accent-color: var(--accent); width: 17px; height: 17px; }
 
-  h3.sec { font-size: 14px; margin: 18px 4px 8px; color: var(--sub); }
-  .infocard p { margin: 6px 0; font-size: 13px; }
-  .infocard ul { margin: 6px 0; padding-left: 18px; font-size: 13px; }
-  textarea.io { width: 100%; min-height: 120px; font-family: ui-monospace, monospace; font-size: 11px; }
+  .infocard p { margin: 7px 0; font-size: 13px; }
+  .infocard ul { margin: 7px 0; padding-left: 18px; font-size: 13px; }
+  .infocard li { margin: 3px 0; }
+  textarea.io { width: 100%; min-height: 120px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 11px; }
   .toast {
-    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-    background: var(--ink); color: #fff; padding: 8px 16px; border-radius: 999px;
-    font-size: 13px; z-index: 50; opacity: 0; transition: opacity .3s; pointer-events: none;
+    position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
+    background: rgba(16,24,40,.92); color: #fff; padding: 9px 18px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; z-index: 50; opacity: 0; transition: opacity .25s; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(16,24,40,.25);
   }
   .toast.show { opacity: 1; }
 </style>
@@ -186,7 +265,7 @@
     <div id="cmpSources"></div>
     <p class="hint">
       💡 表は横にスクロールできます。<b>空き・申請・内定</b>は「園の詳細」タブで月ごとに入力した最新月の値を表示します。<br>
-      🟢=空きあり / 🔴=空き0 (育休延長狙いなら🔴の園が候補)。
+      <span class="badge ok">1</span> = 空きあり ／ <span class="badge zero">0</span> = 空き0 (育休延長狙いならこちらが候補) ／ <span class="badge na">—</span> = 未入力・対象外・公表なし。定員の「?」は要確認。
     </p>
     <p class="hint">
       公式データの確認先:
@@ -269,6 +348,7 @@ const NURSERIES = [
   {
     id: "inukura-kawasaki",
     name: "かわさき犬蔵保育園",
+    short: "かわさき犬蔵",
     operator: "HITOWAキッズライフ(株)",
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区犬蔵2-4-29",
@@ -287,6 +367,7 @@ const NURSERIES = [
   {
     id: "inukura-nijiiro",
     name: "にじいろ保育園犬蔵",
+    short: "にじいろ犬蔵",
     operator: "ライクキッズ(株)",
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区犬蔵2-24-10",
@@ -305,6 +386,7 @@ const NURSERIES = [
   {
     id: "tatsunoko-nohara",
     name: "たつのこのはら保育園",
+    short: "たつのこのはら",
     operator: "社会福祉法人 大慈会",
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区土橋4-7-1",
@@ -323,6 +405,7 @@ const NURSERIES = [
   {
     id: "manabinomori-saginuma",
     name: "まなびの森保育園鷺沼",
+    short: "まなびの森鷺沼",
     operator: "(株)こどもの森",
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区鷺沼4-2-8",
@@ -342,6 +425,7 @@ const NURSERIES = [
   {
     id: "ask-saginuma",
     name: "アスクさぎぬま保育園",
+    short: "アスクさぎぬま",
     operator: "(株)日本保育サービス",
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区鷺沼1-22-6",
@@ -360,6 +444,7 @@ const NURSERIES = [
   {
     id: "berrybear-saginuma",
     name: "ベリーベアー鷺沼",
+    short: "ベリーベアー鷺沼",
     operator: "(株)ネス・コーポレーション",
     city: "川崎市宮前区", pref: "kawasaki",
     address: "川崎市宮前区鷺沼3-5-2",
@@ -379,6 +464,7 @@ const NURSERIES = [
   {
     id: "acc-lollipop",
     name: "アートチャイルドケア ろりぽっぷたまプラーザ",
+    short: "ろりぽっぷ",
     operator: "アートチャイルドケア(株)",
     city: "横浜市青葉区", pref: "yokohama",
     address: "横浜市青葉区美しが丘2-12-1",
@@ -397,6 +483,7 @@ const NURSERIES = [
   {
     id: "shogakukan-tamaplaza",
     name: "小学館アカデミーたまプラーザ保育園",
+    short: "小学館たまプラーザ",
     operator: "(株)小学館集英社プロダクション",
     city: "横浜市青葉区", pref: "yokohama",
     address: "横浜市青葉区美しが丘2-18-8",
@@ -415,6 +502,7 @@ const NURSERIES = [
   {
     id: "gkids-tamaplaza",
     name: "グローバルキッズたまプラーザ保育園",
+    short: "グローバルキッズ",
     operator: "(株)グローバルキッズ",
     city: "横浜市青葉区", pref: "yokohama",
     address: "横浜市青葉区美しが丘2-17-16",
@@ -480,7 +568,7 @@ function fmtMonth(m) {
 function sourceNotesHtml(month) {
   const notes = DATA_SOURCES[month];
   if (!notes) return "";
-  return `<p class="hint">📋 <b>${fmtMonth(month)}分データの出典・集計時期</b><br>${notes.join("<br>")}</p>`;
+  return `<p class="hint sources">📋 <b>${fmtMonth(month)}分データの出典・集計時期</b><br>${notes.join("<br>")}</p>`;
 }
 
 function applyKnownData(s) {
@@ -568,9 +656,9 @@ function latestRec(id) {
   return recs.slice().sort((a, b) => a.month < b.month ? 1 : -1)[0];
 }
 function availCell(v) {
-  if (v === "" || v == null) return '<span class="cell-na">未入力</span>';
+  if (v === "" || v == null) return '<span class="badge na">—</span>';
   const num = Number(v);
-  if (!isNaN(num)) return num > 0 ? `<span>🟢 ${num}</span>` : `<span>🔴 0</span>`;
+  if (!isNaN(num)) return num > 0 ? `<span class="badge ok">${num}</span>` : '<span class="badge zero">0</span>';
   return esc(v);
 }
 function starHtml(count) {
@@ -584,6 +672,16 @@ function capAt(n, age) {
 }
 function capBreakdown(n) {
   return [0, 1, 2, 3, 4, 5].map(a => `${a}歳:${esc(capAt(n, a))}`).join(" / ");
+}
+// 一覧表用の短い定員表示("受入なし"→"—"、"要確認"→"?")
+function capCell(n, age) {
+  const v = n.capAge?.[age];
+  if (typeof v === "number") return String(v);
+  if (v === "受入なし") return "—";
+  return "?";
+}
+function capTotalShort(n) {
+  return String(n.capTotal).replace(/[(（].*$/, "");
 }
 
 /* ================= 一覧比較 ================= */
@@ -618,20 +716,24 @@ function renderCompare() {
     const rt = state.ratings[n.id];
     const pri = st.priority ? `<span class="tag pri">第${esc(st.priority)}希望</span>` : "";
     const cityTag = n.pref === "yokohama"
-      ? '<span class="tag yokohama">横浜市/管外</span>'
+      ? '<span class="tag yokohama">横浜市</span>'
       : '<span class="tag kawasaki">川崎市</span>';
-    const no0 = n.no0 ? '<span class="tag no0">0歳なし?</span>' : "";
-    const appAcc0 = r && (r.app0 !== "" || r.acc0 !== "") ? `${esc(r.app0 || "-")} / ${esc(r.acc0 || "-")}` : '<span class="cell-na">未入力</span>';
-    const appAcc1 = r && (r.app1 !== "" || r.acc1 !== "") ? `${esc(r.app1 || "-")} / ${esc(r.acc1 || "-")}` : '<span class="cell-na">未入力</span>';
+    const no0 = n.no0 ? '<span class="tag no0">0歳なし</span>' : "";
+    const na = '<span class="badge na">—</span>';
+    const excluded = '<span class="badge na">対象外</span>';
+    const appAcc = (app, acc) => (r && (r[app] !== "" || r[acc] !== ""))
+      ? `<b>${esc(r[app] || "-")}</b> / ${esc(r[acc] || "-")}` : na;
+    const dist = n.distM >= 1000 ? (n.distM / 1000).toFixed(1) + "km" : n.distM + "m";
+    const walk = (n.distance.match(/徒歩\d+分/) || [""])[0];
     return `<tr>
-      <td>${esc(n.name)}<span class="mini">${pri}${cityTag}${no0}</span></td>
-      <td>${esc(n.distance.replace(/[(（]概算[)）]/, ""))}<span class="mini"><a href="${mapsUrl(n)}" target="_blank">経路🗺</a></span></td>
-      <td>${availCell(r?.avail0)}</td>
+      <td>${esc(n.short || n.name)}<span class="mini">${pri}${cityTag}${no0}</span></td>
+      <td>${dist}<span class="mini">${walk}・<a href="${mapsUrl(n)}" target="_blank">経路🗺</a></span></td>
+      <td>${n.no0 ? excluded : availCell(r?.avail0)}</td>
       <td>${availCell(r?.avail1)}</td>
-      <td>${appAcc0}</td>
-      <td>${appAcc1}</td>
-      <td>${esc(capAt(n, 0))} / ${esc(capAt(n, 1))}<span class="mini">全${esc(n.capTotal)}</span></td>
-      <td>👨${"★".repeat(rt.papa) || "-"}<br>👩${"★".repeat(rt.mama) || "-"}</td>
+      <td>${n.no0 ? excluded : appAcc("app0", "acc0")}</td>
+      <td>${appAcc("app1", "acc1")}</td>
+      <td>${capCell(n, 0)} / ${capCell(n, 1)}<span class="mini">全${esc(capTotalShort(n))}</span></td>
+      <td>👨${"★".repeat(rt.papa) || "—"}<br>👩${"★".repeat(rt.mama) || "—"}</td>
       <td>${esc(st.visit)}</td>
     </tr>`;
   }).join("");
