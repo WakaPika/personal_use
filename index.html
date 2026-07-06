@@ -363,7 +363,10 @@ const NURSERIES = [
     capTotal: "65名",
     capAge: { 0: 5, 1: 12, 2: 12, 3: 12, 4: 12, 5: 12 },
     ageFrom: "生後5ヶ月〜",
-    hours: "平日・土曜 7:00〜20:00(休園日: 日曜・祝日・年末年始)",
+    hoursOpen: "平日・土曜 7:00〜20:00(日祝・年末年始休)",
+    hoursStd: "7:30〜18:30",
+    hoursExt: "朝 7:00〜7:30 ／ 夜 18:30〜20:00",
+    extFee: "要確認(市の情報提供シートか園見学で確認)",
     station: "鷺沼駅 徒歩15分",
     distance: "約250m・徒歩3分(概算)", distM: 250,
     opened: "2015年4月",
@@ -382,7 +385,10 @@ const NURSERIES = [
     capTotal: "75名(定員は入所状況等により多少増減あり)",
     capAge: { 0: 5, 1: 12, 2: 12, 3: 14, 4: 16, 5: 16 },
     ageFrom: "生後5ヶ月〜就学前",
-    hours: "平日・土曜 7:00〜20:00",
+    hoursOpen: "平日・土曜 7:00〜20:00",
+    hoursStd: "要確認(標準時間認定は開所から最大11時間)",
+    hoursExt: "要確認(20:00まで開所のため夜間延長あり)",
+    extFee: "要確認(市の情報提供シートか園見学で確認)",
     station: "たまプラーザ駅 徒歩20分",
     distance: "約400m・徒歩5分(概算)", distM: 400,
     opened: "2015年4月",
@@ -401,7 +407,10 @@ const NURSERIES = [
     capTotal: "240名",
     capAge: { 0: 15, 1: 36, 2: 45, 3: 48, 4: 48, 5: 48 },
     ageFrom: "要確認",
-    hours: "平日〜土曜 7:00〜20:00(土曜は申込制)／短時間認定コアタイム 8:30〜16:30・延長 7:00〜8:30, 16:30〜20:00",
+    hoursOpen: "平日〜土曜 7:00〜20:00(土曜は申込制)",
+    hoursStd: "要確認 ※短時間認定のコアタイムは8:30〜16:30",
+    hoursExt: "短時間認定: 7:00〜8:30 / 16:30〜20:00 ※標準時間認定の延長帯は要確認",
+    extFee: "要確認(市の情報提供シートか園見学で確認)",
     station: "鷺沼駅 徒歩圏",
     distance: "約1.3km・徒歩17分(概算)", distM: 1300,
     opened: "2013年4月",
@@ -420,7 +429,10 @@ const NURSERIES = [
     capTotal: "60名(川崎市公式資料R8.7月分で確認)",
     capAge: { 0: "受入なし", 1: "要確認", 2: "要確認", 3: "要確認", 4: "要確認", 5: "要確認" },
     ageFrom: "1歳児クラス〜(0歳児クラスの受け入れなし・市公式資料で確認済み)",
-    hours: "月〜土 7:00〜20:00",
+    hoursOpen: "月〜土 7:00〜20:00",
+    hoursStd: "要確認(標準時間認定は開所から最大11時間)",
+    hoursExt: "要確認",
+    extFee: "要確認(市の情報提供シートか園見学で確認)",
     station: "鷺沼駅 徒歩6分",
     distance: "約1.2km・徒歩16分(概算)", distM: 1200,
     opened: "要確認",
@@ -440,7 +452,10 @@ const NURSERIES = [
     capTotal: "60名",
     capAge: { 0: 6, 1: 10, 2: 11, 3: 11, 4: 11, 5: 11 },
     ageFrom: "生後5ヶ月〜",
-    hours: "平日・土曜 7:00〜20:00(延長: 標準時間認定18:01〜20:00、短時間認定7:00〜8:59/17:01〜20:00)",
+    hoursOpen: "平日・土曜 7:00〜20:00",
+    hoursStd: "7:00〜18:00",
+    hoursExt: "標準時間認定: 18:01〜20:00 ／ 短時間認定: 7:00〜8:59・17:01〜20:00",
+    extFee: "要確認(市の情報提供シートか園見学で確認)",
     station: "鷺沼駅 徒歩8分",
     distance: "約1.5km・徒歩19分(概算)", distM: 1500,
     opened: "要確認",
@@ -459,7 +474,10 @@ const NURSERIES = [
     capTotal: "90名",
     capAge: { 0: "受入なし", 1: 15, 2: 15, 3: 20, 4: 20, 5: 20 },
     ageFrom: "1歳児クラス〜(0歳児クラスの受け入れなし・市公式資料で確認済み)",
-    hours: "平日・土曜 7:00〜20:00",
+    hoursOpen: "平日・土曜 7:00〜20:00",
+    hoursStd: "要確認(標準時間認定は開所から最大11時間)",
+    hoursExt: "要確認",
+    extFee: "要確認(市の情報提供シートか園見学で確認)",
     station: "鷺沼駅 徒歩圏",
     distance: "約1.4km・徒歩18分(概算)", distM: 1400,
     opened: "要確認",
@@ -479,7 +497,10 @@ const NURSERIES = [
     capTotal: "75名",
     capAge: { 0: 3, 1: 12, 2: 15, 3: 15, 4: 15, 5: 15 },
     ageFrom: "生後57日(2ヶ月)〜5歳児クラス",
-    hours: "平日 7:00〜20:30、土曜 7:30〜19:00(日祝休園)",
+    hoursOpen: "平日 7:00〜20:30、土曜 7:30〜19:00(日祝休)",
+    hoursStd: "要確認",
+    hoursExt: "要確認(平日は20:30まで開所)",
+    extFee: "要確認(横浜市の施設情報か園見学で確認)",
     station: "たまプラーザ駅 徒歩7分",
     distance: "約1.6km・徒歩20分(概算)", distM: 1600,
     opened: "要確認",
@@ -498,7 +519,10 @@ const NURSERIES = [
     capTotal: "78名(横浜市公式資料R8.7.1時点の入所児童数+受入可能数から算出)",
     capAge: { 0: 6, 1: 12, 2: 15, 3: 15, 4: 15, 5: 15 },
     ageFrom: "生後57日(2ヶ月)〜5歳児クラス",
-    hours: "平日 7:00〜20:00、土曜 7:00〜18:00",
+    hoursOpen: "平日 7:00〜20:00、土曜 7:00〜18:00",
+    hoursStd: "要確認",
+    hoursExt: "要確認",
+    extFee: "要確認(横浜市の施設情報か園見学で確認)",
     station: "たまプラーザ駅 徒歩4分",
     distance: "約1.7km・徒歩21分(概算)", distM: 1700,
     opened: "要確認",
@@ -517,7 +541,10 @@ const NURSERIES = [
     capTotal: "58名(横浜市公式資料R8.7.1時点の入所児童数+受入可能数から算出)",
     capAge: { 0: 4, 1: 10, 2: 11, 3: 11, 4: 11, 5: 11 },
     ageFrom: "0歳〜5歳児クラス",
-    hours: "平日 7:30〜20:30、土曜 7:30〜19:00(延長: 平日18:31〜20:30、土曜18:31〜19:00)",
+    hoursOpen: "平日 7:30〜20:30、土曜 7:30〜19:00",
+    hoursStd: "7:30〜18:30",
+    hoursExt: "平日 18:31〜20:30 ／ 土曜 18:31〜19:00",
+    extFee: "要確認(公式サイトに記載なし・園に確認)",
     station: "たまプラーザ駅 徒歩圏",
     distance: "約1.7km・徒歩21分(概算)", distM: 1700,
     opened: "要確認",
@@ -826,7 +853,10 @@ function renderCards() {
         <dt>定員(全体)</dt><dd>${esc(n.capTotal)}</dd>
         <dt>年齢別定員</dt><dd>${capBreakdown(n)}</dd>
         <dt>受入月齢</dt><dd>${esc(n.ageFrom)}</dd>
-        <dt>開所時間</dt><dd>${esc(n.hours)}</dd>
+        <dt>開所時間</dt><dd>${esc(n.hoursOpen)}</dd>
+        <dt>標準時間</dt><dd>${esc(n.hoursStd)}</dd>
+        <dt>延長時間</dt><dd>${esc(n.hoursExt)}</dd>
+        <dt>延長料金</dt><dd>${esc(n.extFee)}</dd>
         <dt>開設</dt><dd>${esc(n.opened)}</dd>
         ${n.tel ? `<dt>電話</dt><dd><a href="tel:${esc(n.tel)}">${esc(n.tel)}</a></dd>` : ""}
         ${n.note ? `<dt>特徴</dt><dd>${esc(n.note)}</dd>` : ""}
@@ -889,7 +919,11 @@ function renderCards() {
   // 全園分の月次データの出典・集計時期をタブ最下部にまとめて表示
   const months = [...new Set(NURSERIES.flatMap(n => (state.records[n.id] || []).map(r => r.month)))]
     .filter(Boolean).sort();
-  document.getElementById("detailSources").innerHTML = months.map(sourceNotesHtml).join("");
+  const hoursNote = `<p class="hint sources">⏱ <b>保育時間・延長料金について</b><br>
+    「標準時間」は保育標準時間認定(1日最大11時間)で預けられる時間帯、「短時間」は保育短時間認定(最大8時間)。それを超える利用が延長保育(別料金)。<br>
+    延長料金は園ごとの設定で、月額登録制+スポット利用の園が多い。川崎市は生活保護・市民税非課税世帯の延長保育料免除あり。<br>
+    「要確認」の項目は <a href="https://www.city.kawasaki.jp/miyamae/page/0000077736.html" target="_blank">宮前区の情報提供シート(園ごとのPDF)</a> や園見学で確認して、このページに反映していく。</p>`;
+  document.getElementById("detailSources").innerHTML = months.map(sourceNotesHtml).join("") + hoursNote;
 }
 
 /* ================= イベント ================= */
