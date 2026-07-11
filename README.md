@@ -3,6 +3,9 @@
 
 ## 🍚 すくすくごはん — 離乳食 栄養管理アプリ
 
+**公開URL: https://wakapika.github.io/personal_use/baby-food/**
+（GitHub Pagesの公開元ブランチ `claude/create-family-muku-folders-niry6c` の `baby-food/` から配信しています）
+
 `index.html` をブラウザで開くだけで使える、離乳食・ミルクの栄養管理ウェブアプリです。
 外部ライブラリ・サーバー不要の単一HTMLファイルで、データはブラウザのローカルストレージに保存されます。
 
