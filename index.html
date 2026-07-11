@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>すくすくごはん — 離乳食 栄養管理</title>
+<style>
+  :root {
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;      /* meter fill (sequential blue) */
+    --series-1-soft: #cde2fb; /* meter track tint */
+    --good-text: #006300;
+    --warn: #fab219;
+    --critical: #d03b3b;
+    --accent-bg: #eef4fc;
+    --card-radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-1-soft: #10305c;
+      --good-text: #0ca30c;
+      --accent-bg: #16233a;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+    background: var(--page);
+    color: var(--text-primary);
+    line-height: 1.6;
+    padding-bottom: 72px;
+  }
+  header {
+    background: var(--surface-1);
+    border-bottom: 1px solid var(--grid);
+    padding: 14px 16px;
+    text-align: center;
+  }
+  header h1 { font-size: 18px; font-weight: 700; }
+  header p { font-size: 12px; color: var(--muted); }
+  main { max-width: 720px; margin: 0 auto; padding: 12px 12px 24px; }
+
+  nav.tabs {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex;
+    background: var(--surface-1);
+    border-top: 1px solid var(--grid);
+    z-index: 20;
+  }
+  nav.tabs button {
+    flex: 1; padding: 10px 4px 12px;
+    background: none; border: none; cursor: pointer;
+    font-size: 11px; color: var(--muted);
+    font-family: inherit;
+  }
+  nav.tabs button .ico { display: block; font-size: 20px; line-height: 1.3; }
+  nav.tabs button.active { color: var(--series-1); font-weight: 700; }
+
+  section.card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  section.card h2 { font-size: 15px; margin-bottom: 10px; }
+  section.card h2 .sub { font-size: 11px; font-weight: 400; color: var(--muted); margin-left: 6px; }
+
+  label.fld { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; }
+  label.fld span.lbl { display: block; margin-bottom: 3px; font-weight: 600; }
+  input, select, textarea {
+    width: 100%; padding: 9px 10px;
+    border: 1px solid var(--baseline); border-radius: 8px;
+    font-size: 15px; font-family: inherit;
+    background: var(--surface-1); color: var(--text-primary);
+  }
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; min-width: 0; }
+  button.primary {
+    background: var(--series-1); color: #fff; border: none;
+    padding: 11px 18px; border-radius: 8px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit; width: 100%;
+  }
+  button.ghost {
+    background: none; border: 1px solid var(--baseline); color: var(--text-secondary);
+    padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  button.icon-btn {
+    background: none; border: none; cursor: pointer; font-size: 15px;
+    color: var(--muted); padding: 2px 6px; font-family: inherit;
+  }
+
+  .date-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .date-nav input[type=date] { text-align: center; font-weight: 600; }
+  .date-nav button { flex: 0 0 auto; }
+
+  .profile-banner {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--accent-bg); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 12px; font-size: 13px;
+  }
+  .profile-banner b { font-size: 14px; }
+  .profile-banner .stage { color: var(--series-1); font-weight: 700; }
+
+  /* nutrient meters */
+  .meter { margin-bottom: 12px; }
+  .meter .meter-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12px; margin-bottom: 3px;
+  }
+  .meter .meter-head .nname { font-weight: 600; color: var(--text-primary); }
+  .meter .meter-head .nval { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .meter .meter-head .npct { color: var(--muted); margin-left: 6px; font-variant-numeric: tabular-nums; }
+  .meter .meter-head .done { color: var(--good-text); font-weight: 700; margin-left: 6px; }
+  .meter .track {
+    height: 8px; border-radius: 4px;
+    background: var(--series-1-soft);
+    overflow: hidden;
+  }
+  .meter .fill {
+    height: 100%; border-radius: 4px 4px 4px 4px;
+    background: var(--series-1);
+    transition: width .3s ease;
+  }
+
+  .meal-block { border-top: 1px solid var(--grid); padding-top: 10px; margin-top: 10px; }
+  .meal-block:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+  .meal-block h3 { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+  .item-row { padding: 6px 0; border-bottom: 1px dashed var(--grid); font-size: 13px; }
+  .item-row .item-main { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+  .item-row .fname { font-weight: 600; }
+  .item-row .amt { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .item-row .kcal { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .item-detail {
+    display: none; margin-top: 6px; font-size: 11.5px; color: var(--text-secondary);
+    background: var(--page); border-radius: 8px; padding: 8px 10px;
+  }
+  .item-detail.open { display: block; }
+  .item-detail table { width: 100%; border-collapse: collapse; }
+  .item-detail td { padding: 2px 4px; font-variant-numeric: tabular-nums; }
+  .item-detail td:first-child { color: var(--text-primary); }
+  .item-detail td:last-child { text-align: right; color: var(--muted); }
+
+  .review-box {
+    background: var(--accent-bg); border-radius: 10px; padding: 14px;
+    font-size: 13.5px; white-space: pre-wrap;
+  }
+  .review-score { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+
+  .reco { border-top: 1px solid var(--grid); padding: 10px 0; }
+  .reco:first-of-type { border-top: none; padding-top: 0; }
+  .reco h3 { font-size: 13.5px; margin-bottom: 4px; }
+  .reco h3 .pct { color: var(--critical); font-size: 12px; font-weight: 700; margin-left: 6px; }
+  .reco .foods { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .reco .food-chip {
+    background: var(--accent-bg); border-radius: 999px;
+    padding: 3px 12px; font-size: 12px; font-weight: 600;
+  }
+  .reco .food-chip small { font-weight: 400; color: var(--muted); }
+  .reco .advice { font-size: 12.5px; color: var(--text-secondary); }
+  .reco .advice::before { content: "👩‍⚕️ "; }
+
+  .hist-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 4px; border-bottom: 1px solid var(--grid);
+    cursor: pointer;
+  }
+  .hist-row:hover { background: var(--page); }
+  .hist-row .hdate { font-size: 13px; font-weight: 600; flex: 0 0 108px; }
+  .hist-row .hbar { flex: 1; height: 8px; border-radius: 4px; background: var(--series-1-soft); overflow: hidden; }
+  .hist-row .hbar .fill { height: 100%; border-radius: 4px; background: var(--series-1); }
+  .hist-row .hpct { flex: 0 0 44px; text-align: right; font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .hist-row .hkcal { flex: 0 0 70px; text-align: right; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .targets-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .targets-table td { padding: 4px 6px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  .targets-table td:last-child { text-align: right; color: var(--text-secondary); }
+
+  .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 14px 0; }
+  .note { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .hidden { display: none !important; }
+  .foot-disclaimer { font-size: 10.5px; color: var(--muted); text-align: center; margin: 18px 8px 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍚 すくすくごはん</h1>
+  <p>離乳食・ミルクの栄養管理アプリ</p>
+</header>
+
+<main>
+  <!-- ============ 記録タブ ============ -->
+  <div id="tab-log">
+    <div id="log-need-profile" class="hidden">
+      <section class="card">
+        <h2>はじめに</h2>
+        <p style="font-size:13.5px;">お子さまの生年月日と体重を登録すると、1日に必要な栄養素の目標量を自動計算します。</p>
+        <br>
+        <button class="primary" onclick="switchTab('profile')">プロフィールを登録する</button>
+      </section>
+    </div>
+
+    <div id="log-body">
+      <div class="date-nav">
+        <button class="ghost" onclick="shiftDate(-1)">◀ 前日</button>
+        <input type="date" id="log-date" onchange="onDateChange()">
+        <button class="ghost" onclick="shiftDate(1)">翌日 ▶</button>
+      </div>
+
+      <div class="profile-banner" id="profile-banner"></div>
+
+      <!-- 食事の入力 -->
+      <section class="card">
+        <h2>食事・ミルクを記録<span class="sub">1回の食事ごとに食材とおおよその量を入力</span></h2>
+        <div class="row" style="margin-bottom:10px;">
+          <label class="fld" style="flex:0 0 32%;">
+            <span class="lbl">食事の区分</span>
+            <select id="in-meal-type">
+              <option>朝食</option><option>昼食</option><option>夕食</option>
+              <option>おやつ</option><option>ミルク</option>
+            </select>
+          </label>
+          <label class="fld">
+            <span class="lbl">食材・ミルク</span>
+            <select id="in-food"></select>
+          </label>
+        </div>
+        <div class="row" style="align-items:flex-end;">
+          <label class="fld" style="margin-bottom:0;">
+            <span class="lbl">量（<span id="in-unit">g</span>）</span>
+            <input type="number" id="in-amount" min="1" max="1000" step="1" placeholder="例: 50">
+          </label>
+          <button class="primary" style="flex:0 0 40%;" onclick="addItem()">＋ 追加する</button>
+        </div>
+        <p class="note">※ ペースト状の食材は 1ml ≒ 1g として入力できます。</p>
+        <div id="food-note" class="note" style="color:var(--critical);"></div>
+      </section>
+
+      <!-- 今日の記録一覧 -->
+      <section class="card">
+        <h2>この日の記録<span class="sub">タップで栄養の内訳を表示</span></h2>
+        <div id="meal-list"></div>
+      </section>
+
+      <!-- 栄養素の達成状況 -->
+      <section class="card">
+        <h2>栄養素の達成状況<span class="sub">1日の目標量に対する割合</span></h2>
+        <div id="meters"></div>
+        <p class="note">目標量は「日本人の食事摂取基準（2020年版）」の月齢区分に基づく目安です。体重により補正しています。</p>
+      </section>
+
+      <!-- おすすめ食材 -->
+      <section class="card" id="reco-card">
+        <h2>👩‍⚕️ 専門家のおすすめ<span class="sub">不足している栄養素を補う食材</span></h2>
+        <div id="reco-list"></div>
+      </section>
+
+      <!-- 総評 -->
+      <section class="card">
+        <h2>1日の総評</h2>
+        <div id="review-area"><p class="empty">1日の終わりにボタンを押すと、その日の食事の総評を作成します。</p></div>
+        <br>
+        <button class="primary" onclick="makeReview()">📝 この日の総評を作成する</button>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ 履歴タブ ============ -->
+  <div id="tab-history" class="hidden">
+    <section class="card">
+      <h2>栄養の記録履歴<span class="sub">主要栄養素の平均達成率</span></h2>
+      <div id="history-list"></div>
+    </section>
+  </div>
+
+  <!-- ============ プロフィールタブ ============ -->
+  <div id="tab-profile" class="hidden">
+    <section class="card">
+      <h2>お子さまのプロフィール</h2>
+      <label class="fld"><span class="lbl">お名前（任意）</span>
+        <input type="text" id="p-name" placeholder="例: はなちゃん" maxlength="20">
+      </label>
+      <div class="row">
+        <label class="fld"><span class="lbl">生年月日</span>
+          <input type="date" id="p-birth">
+        </label>
+        <label class="fld"><span class="lbl">性別</span>
+          <select id="p-sex"><option value="m">男の子</option><option value="f">女の子</option></select>
+        </label>
+      </div>
+      <label class="fld"><span class="lbl">現在の体重（kg）</span>
+        <input type="number" id="p-weight" min="1" max="30" step="0.1" placeholder="例: 7.5">
+      </label>
+      <button class="primary" onclick="saveProfile()">保存する</button>
+    </section>
+
+    <section class="card" id="targets-card">
+      <h2>1日に必要な栄養素の目標量</h2>
+      <div id="targets-view"><p class="empty">プロフィールを保存すると表示されます。</p></div>
+    </section>
+  </div>
+
+  <p class="foot-disclaimer">
+    本アプリの数値は「日本人の食事摂取基準（2020年版）」と「日本食品標準成分表」に基づく概算の目安です。<br>
+    医療上のアドバイスではありません。アレルギーや発育について気になることは、かかりつけ医・保健師・管理栄養士にご相談ください。
+  </p>
+</main>
+
+<nav class="tabs">
+  <button id="tabbtn-log" class="active" onclick="switchTab('log')"><span class="ico">🍽️</span>記録</button>
+  <button id="tabbtn-history" onclick="switchTab('history')"><span class="ico">📅</span>履歴</button>
+  <button id="tabbtn-profile" onclick="switchTab('profile')"><span class="ico">👶</span>プロフィール</button>
+</nav>
+
+<script>
+"use strict";
+
+/* ==================== 栄養素の定義 ==================== */
+const NUTRIENTS = [
+  { key: "energy",  name: "エネルギー", unit: "kcal" },
+  { key: "protein", name: "たんぱく質", unit: "g" },
+  { key: "fat",     name: "脂質",       unit: "g" },
+  { key: "carbs",   name: "炭水化物",   unit: "g" },
+  { key: "calcium", name: "カルシウム", unit: "mg" },
+  { key: "iron",    name: "鉄",         unit: "mg" },
+  { key: "vitA",    name: "ビタミンA",  unit: "µg" },
+  { key: "vitD",    name: "ビタミンD",  unit: "µg" },
+  { key: "vitC",    name: "ビタミンC",  unit: "mg" },
+  { key: "zinc",    name: "亜鉛",       unit: "mg" },
+];
+// 総評・履歴スコアに使う主要栄養素
+const SCORE_KEYS = ["energy","protein","calcium","iron","vitA","vitD","vitC","zinc"];
+
+/* ==================== 食品データベース ====================
+   100g（液体は100ml）あたりの成分値。日本食品標準成分表の概算値。
+   n: [kcal, たんぱく質g, 脂質g, 炭水化物g, Ca mg, 鉄mg, VA µg, VD µg, VC mg, 亜鉛mg]
+   min: 目安の開始月齢 */
+const FOODS = [
+  // --- ミルク ---
+  { id:"breastmilk", name:"母乳", cat:"ミルク", unit:"ml", min:0, n:[65,1.1,3.5,7.2,27,0.04,46,0.3,5,0.3] },
+  { id:"formula",    name:"育児用ミルク（調乳済み）", cat:"ミルク", unit:"ml", min:0, n:[67,1.5,3.6,7.5,49,0.9,60,1.0,7,0.4] },
+  { id:"followup",   name:"フォローアップミルク（調乳済み）", cat:"ミルク", unit:"ml", min:9, n:[65,2.0,2.8,8.4,90,1.3,53,0.7,7,0.3] },
+  { id:"milk",       name:"牛乳", cat:"ミルク", unit:"ml", min:12, n:[61,3.3,3.8,4.8,110,0.02,38,0.3,1,0.4], note:"飲み物として与えるのは1歳からにしましょう" },
+  // --- 主食 ---
+  { id:"rice10", name:"10倍がゆ", cat:"主食", unit:"g", min:5,  n:[33,0.5,0.1,7.6,1,0,0,0,0,0.2] },
+  { id:"rice7",  name:"7倍がゆ",  cat:"主食", unit:"g", min:7,  n:[46,0.8,0.1,10.3,1,0.1,0,0,0,0.3] },
+  { id:"rice5",  name:"5倍がゆ（全がゆ）", cat:"主食", unit:"g", min:9, n:[65,1.1,0.1,14.6,1,0.1,0,0,0,0.5] },
+  { id:"riceSoft", name:"軟飯", cat:"主食", unit:"g", min:12, n:[113,1.8,0.3,25.4,2,0.1,0,0,0,0.7] },
+  { id:"bread",  name:"食パン", cat:"主食", unit:"g", min:7,  n:[248,8.9,4.1,46.4,22,0.5,0,0,0,0.5] },
+  { id:"udon",   name:"うどん（ゆで）", cat:"主食", unit:"g", min:7, n:[95,2.6,0.4,21.6,6,0.2,0,0,0,0.1] },
+  { id:"somen",  name:"そうめん（ゆで）", cat:"主食", unit:"g", min:7, n:[114,3.5,0.4,25.8,6,0.2,0,0,0,0.2] },
+  { id:"oatmeal",name:"オートミール", cat:"主食", unit:"g", min:9, n:[350,13.7,5.7,69.1,47,3.9,0,0,0,2.1] },
+  { id:"sweetpotato", name:"さつまいも（蒸し）", cat:"主食", unit:"g", min:5, n:[131,1.2,0.2,31.9,40,0.5,3,0,29,0.2] },
+  { id:"potato", name:"じゃがいも（ゆで）", cat:"主食", unit:"g", min:5, n:[76,1.9,0.1,18.1,4,0.6,0,0,11,0.2] },
+  // --- 野菜 ---
+  { id:"carrot",   name:"にんじん（ゆで）", cat:"野菜", unit:"g", min:5, n:[28,0.7,0.1,8.5,29,0.2,730,0,4,0.2] },
+  { id:"pumpkin",  name:"かぼちゃ（ゆで）", cat:"野菜", unit:"g", min:5, n:[80,1.6,0.3,21.3,14,0.5,330,0,32,0.3] },
+  { id:"spinach",  name:"ほうれん草（ゆで）", cat:"野菜", unit:"g", min:5, n:[23,2.6,0.5,4.0,69,0.9,450,0,19,0.7] },
+  { id:"komatsuna",name:"小松菜（ゆで）", cat:"野菜", unit:"g", min:5, n:[15,1.6,0.1,3.0,150,2.1,260,0,21,0.3] },
+  { id:"broccoli", name:"ブロッコリー（ゆで）", cat:"野菜", unit:"g", min:5, n:[30,3.9,0.4,5.2,41,0.9,69,0,55,0.4] },
+  { id:"tomato",   name:"トマト（湯むき）", cat:"野菜", unit:"g", min:5, n:[20,0.7,0.1,4.7,7,0.2,45,0,15,0.1] },
+  { id:"cabbage",  name:"キャベツ（ゆで）", cat:"野菜", unit:"g", min:5, n:[19,0.9,0.2,4.6,40,0.2,5,0,17,0.1] },
+  { id:"daikon",   name:"大根（ゆで）", cat:"野菜", unit:"g", min:5, n:[15,0.5,0.1,4.0,25,0.2,0,0,9,0.1] },
+  { id:"onion",    name:"玉ねぎ（ゆで）", cat:"野菜", unit:"g", min:5, n:[30,0.7,0.1,7.3,17,0.2,0,0,5,0.1] },
+  // --- 果物 ---
+  { id:"banana", name:"バナナ", cat:"果物", unit:"g", min:5, n:[93,1.1,0.2,22.5,6,0.3,5,0,16,0.2] },
+  { id:"apple",  name:"りんご（すりおろし）", cat:"果物", unit:"g", min:5, n:[53,0.1,0.2,15.5,3,0.1,1,0,4,0] },
+  { id:"strawberry", name:"いちご", cat:"果物", unit:"g", min:5, n:[31,0.9,0.1,8.5,17,0.3,1,0,62,0.2] },
+  { id:"mikan",  name:"みかん", cat:"果物", unit:"g", min:5, n:[49,0.7,0.1,12.0,21,0.2,84,0,32,0.1] },
+  { id:"peach",  name:"もも", cat:"果物", unit:"g", min:5, n:[38,0.6,0.1,10.2,4,0.1,0,0,8,0.1] },
+  // --- 魚 ---
+  { id:"cod",    name:"白身魚（たら）", cat:"魚", unit:"g", min:5, n:[72,17.6,0.2,0.1,32,0.2,10,1.0,0,0.5] },
+  { id:"tai",    name:"鯛", cat:"魚", unit:"g", min:5, n:[129,20.9,5.8,0.1,11,0.2,8,5.0,1,0.4] },
+  { id:"salmon", name:"鮭", cat:"魚", unit:"g", min:7, n:[124,22.3,4.1,0.1,14,0.5,11,32.0,1,0.5] },
+  { id:"tuna",   name:"まぐろ（赤身）", cat:"魚", unit:"g", min:7, n:[115,26.4,0.8,0.1,5,1.1,83,5.0,2,0.4] },
+  { id:"katsuo", name:"かつお", cat:"魚", unit:"g", min:7, n:[108,25.8,0.5,0.1,11,1.9,5,4.0,0,0.8] },
+  { id:"shirasu",name:"釜揚げしらす（塩抜き）", cat:"魚", unit:"g", min:7, n:[84,17.6,1.7,0,190,0.1,140,4.2,0,1.1] },
+  { id:"tunacan",name:"ツナ水煮缶", cat:"魚", unit:"g", min:9, n:[70,16.0,0.7,0.2,5,0.6,10,3.0,0,0.7] },
+  // --- 肉・卵 ---
+  { id:"sasami", name:"鶏ささみ", cat:"肉・卵", unit:"g", min:7, n:[98,23.9,0.8,0.1,4,0.3,5,0,2,0.6] },
+  { id:"chickenBreast", name:"鶏むね肉（皮なし）", cat:"肉・卵", unit:"g", min:8, n:[105,23.3,1.9,0.1,4,0.3,9,0.1,3,0.7] },
+  { id:"liver",  name:"鶏レバー", cat:"肉・卵", unit:"g", min:9, n:[100,18.9,3.1,0.6,5,9.0,14000,0.2,20,3.3], note:"ビタミンAが非常に多いため、少量（週1回程度）にしましょう" },
+  { id:"pork",   name:"豚もも肉（赤身）", cat:"肉・卵", unit:"g", min:9, n:[128,22.1,3.6,0.2,4,0.9,3,0.3,1,2.0] },
+  { id:"beef",   name:"牛もも肉（赤身）", cat:"肉・卵", unit:"g", min:9, n:[130,21.9,4.9,0.4,4,2.7,3,0.1,1,4.5] },
+  { id:"eggYolk",name:"卵黄（固ゆで）", cat:"肉・卵", unit:"g", min:6, n:[336,16.5,34.3,0.2,140,4.8,690,12.0,0,3.6], note:"初めては耳かき1さじ程度の少量から。しっかり加熱を" },
+  { id:"egg",    name:"全卵（固ゆで）", cat:"肉・卵", unit:"g", min:9, n:[134,12.5,10.4,0.3,47,1.5,160,2.5,0,1.1] },
+  // --- 大豆・乳製品 ---
+  { id:"tofu",   name:"絹ごし豆腐", cat:"大豆・乳製品", unit:"g", min:5, n:[56,5.3,3.5,2.0,75,1.2,0,0,0,0.5] },
+  { id:"natto",  name:"納豆（ひきわり）", cat:"大豆・乳製品", unit:"g", min:7, n:[185,16.6,10.0,10.5,59,2.6,0,0,0,1.3] },
+  { id:"kinako", name:"きなこ", cat:"大豆・乳製品", unit:"g", min:7, n:[451,36.7,25.7,28.5,190,8.0,0,0,1,4.1] },
+  { id:"koyadofu", name:"高野豆腐（水煮）", cat:"大豆・乳製品", unit:"g", min:7, n:[104,10.7,7.3,1.1,150,1.7,0,0,0,1.2] },
+  { id:"yogurt", name:"プレーンヨーグルト（無糖）", cat:"大豆・乳製品", unit:"g", min:7, n:[56,3.6,3.0,4.9,120,0,33,0,1,0.4] },
+  { id:"cottage",name:"カッテージチーズ", cat:"大豆・乳製品", unit:"g", min:7, n:[99,13.3,4.5,1.9,55,0.1,37,0,0,0.5] },
+];
+const FOOD_MAP = Object.fromEntries(FOODS.map(f => [f.id, f]));
+const CATEGORIES = ["ミルク","主食","野菜","果物","魚","肉・卵","大豆・乳製品"];
+
+/* ==================== 栄養士アドバイス（栄養素別） ==================== */
+const NUTRIENT_ADVICE = {
+  energy:  "エネルギーが足りないと体重の伸びに影響します。おかゆ・いも類・バナナなどエネルギー源になる食材を1さじずつ増やしてみましょう。食が細い日はミルクで補ってOKです。",
+  protein: "たんぱく質は体をつくるもとです。豆腐・白身魚・ささみ・ヨーグルトなどを、1回の食事に1品を目安に取り入れましょう。",
+  fat:     "脂質は脳の発達に大切なエネルギー源です。月齢に応じて、ミルクや卵黄、魚などから自然にとれるようにしましょう。",
+  carbs:   "炭水化物は活動のエネルギー源です。おかゆやうどん、パン、いも類を主食としてしっかり与えましょう。",
+  calcium: "カルシウムは骨や歯をつくるもとです。ヨーグルト・豆腐・しらす・小松菜などがおすすめ。育児用ミルクにも豊富に含まれます。",
+  iron:    "生後6か月ごろから、生まれたときに蓄えた鉄が減ってきます。赤身の肉や魚、レバー、納豆、小松菜を意識して。育児用ミルクやフォローアップミルクも鉄の良い補給源です。",
+  vitA:    "ビタミンAは皮膚や粘膜、目の健康を守ります。にんじん・かぼちゃ・ほうれん草などの緑黄色野菜をペーストにして取り入れましょう。",
+  vitD:    "ビタミンDはカルシウムの吸収を助け、骨の成長に不可欠です。鮭・しらす・卵黄がおすすめ。天気の良い日は10〜15分程度のお散歩（日光浴）も効果的です。",
+  vitC:    "ビタミンCは鉄の吸収を助けます。いちご・みかんなどの果物や、ブロッコリー・いも類を食事に添えましょう。",
+  zinc:    "亜鉛は成長や味覚の発達に関わります。赤身肉・納豆・きなこなどを少しずつ取り入れましょう。",
+};
+
+/* ==================== 食事摂取基準（1日あたり目標量） ====================
+   日本人の食事摂取基準（2020年版）乳児・幼児の目安量/推奨量に基づく概算 */
+function ageBand(months) {
+  if (months < 6)  return "0-5";
+  if (months < 9)  return "6-8";
+  if (months < 12) return "9-11";
+  if (months < 24) return "12-23";
+  return "24+";
+}
+const BANDS = {
+  "0-5":  { label:"0〜5か月",   refW:{m:6.3,f:5.9},   energy:{m:550,f:500},   protein:10, fatE:0.50, calcium:{m:200,f:200}, iron:{m:0.5,f:0.5}, vitA:{m:300,f:300}, vitD:5.0, vitC:40, zinc:2 },
+  "6-8":  { label:"6〜8か月",   refW:{m:8.4,f:7.8},   energy:{m:650,f:600},   protein:15, fatE:0.40, calcium:{m:250,f:250}, iron:{m:5.0,f:4.5}, vitA:{m:400,f:400}, vitD:5.0, vitC:40, zinc:3 },
+  "9-11": { label:"9〜11か月",  refW:{m:9.1,f:8.4},   energy:{m:700,f:650},   protein:25, fatE:0.40, calcium:{m:250,f:250}, iron:{m:5.0,f:4.5}, vitA:{m:400,f:400}, vitD:5.0, vitC:40, zinc:3 },
+  "12-23":{ label:"1〜2歳",     refW:{m:11.5,f:11.0}, energy:{m:950,f:900},   protein:20, fatE:0.25, calcium:{m:450,f:400}, iron:{m:4.5,f:4.5}, vitA:{m:400,f:350}, vitD:3.2, vitC:40, zinc:3 },
+  "24+":  { label:"3〜5歳",     refW:{m:16.5,f:16.1}, energy:{m:1300,f:1250}, protein:25, fatE:0.25, calcium:{m:600,f:550}, iron:{m:5.5,f:5.5}, vitA:{m:450,f:500}, vitD:3.8, vitC:50, zinc:4 },
+};
+function stageInfo(months) {
+  if (months < 5)  return { name:"授乳期", desc:"母乳・ミルクのみの時期" };
+  if (months < 7)  return { name:"ゴックン期（初期）", desc:"なめらかにすりつぶした状態・1日1〜2回食" };
+  if (months < 9)  return { name:"モグモグ期（中期）", desc:"舌でつぶせる固さ・1日2回食" };
+  if (months < 12) return { name:"カミカミ期（後期）", desc:"歯ぐきでつぶせる固さ・1日3回食" };
+  if (months < 19) return { name:"パクパク期（完了期）", desc:"歯ぐきで噛める固さ・1日3回食＋おやつ" };
+  return { name:"幼児食", desc:"薄味の幼児食に移行する時期" };
+}
+
+// 生年月日 → 月齢
+function ageInMonths(birthStr, onDateStr) {
+  const b = new Date(birthStr), d = new Date(onDateStr);
+  let m = (d.getFullYear() - b.getFullYear()) * 12 + (d.getMonth() - b.getMonth());
+  if (d.getDate() < b.getDate()) m--;
+  return Math.max(0, m);
+}
+
+// 1日の目標量を計算（エネルギー系は体重で補正、±20%まで）
+function dailyTargets(profile, dateStr) {
+  const months = ageInMonths(profile.birth, dateStr);
+  const band = BANDS[ageBand(months)];
+  const sex = profile.sex === "f" ? "f" : "m";
+  let wFactor = 1;
+  if (profile.weight > 0) {
+    wFactor = Math.min(1.2, Math.max(0.8, profile.weight / band.refW[sex]));
+  }
+  const energy = Math.round(band.energy[sex] * wFactor);
+  const fat = Math.round(energy * band.fatE / 9);
+  const protein = band.protein;
+  // 炭水化物はエネルギーの残りから算出
+  const carbs = Math.max(10, Math.round((energy - protein * 4 - fat * 9) / 4));
+  return {
+    months, band,
+    values: {
+      energy, protein, fat, carbs,
+      calcium: band.calcium[sex],
+      iron: band.iron[sex],
+      vitA: band.vitA[sex],
+      vitD: band.vitD,
+      vitC: band.vitC,
+      zinc: band.zinc,
+    }
+  };
+}
+
+/* ==================== データ保存 ==================== */
+const LS_PROFILE = "bfn.profile";
+const LS_RECORDS = "bfn.records";
+function loadProfile() { try { return JSON.parse(localStorage.getItem(LS_PROFILE)) } catch(e){ return null } }
+function saveProfileData(p) { localStorage.setItem(LS_PROFILE, JSON.stringify(p)); }
+function loadRecords() { try { return JSON.parse(localStorage.getItem(LS_RECORDS)) || {} } catch(e){ return {} } }
+function saveRecords(r) { localStorage.setItem(LS_RECORDS, JSON.stringify(r)); }
+
+/* ==================== 状態 ==================== */
+let currentDate = todayStr();
+let records = loadRecords();
+
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function fmt(v, digits) {
+  const d = digits !== undefined ? digits : (v >= 100 ? 0 : v >= 10 ? 1 : v >= 1 ? 1 : 2);
+  return Number(v.toFixed(d)).toLocaleString("ja-JP");
+}
+
+/* ==================== 栄養計算 ==================== */
+function itemNutrients(item) {
+  const food = FOOD_MAP[item.foodId];
+  if (!food) return NUTRIENTS.map(() => 0);
+  return food.n.map(v => v * item.amount / 100);
+}
+function dayTotals(dateStr) {
+  const rec = records[dateStr];
+  const totals = {};
+  NUTRIENTS.forEach(n => totals[n.key] = 0);
+  let milkEnergy = 0;
+  if (rec) {
+    for (const item of rec.items) {
+      const vals = itemNutrients(item);
+      NUTRIENTS.forEach((n, i) => totals[n.key] += vals[i]);
+      const food = FOOD_MAP[item.foodId];
+      if (food && food.cat === "ミルク") milkEnergy += vals[0];
+    }
+  }
+  return { totals, milkEnergy };
+}
+function dayScore(dateStr, profile) {
+  const { totals } = dayTotals(dateStr);
+  const t = dailyTargets(profile, dateStr).values;
+  let sum = 0;
+  for (const k of SCORE_KEYS) sum += Math.min(100, t[k] > 0 ? totals[k] / t[k] * 100 : 0);
+  return Math.round(sum / SCORE_KEYS.length);
+}
+
+/* ==================== タブ ==================== */
+function switchTab(tab) {
+  for (const t of ["log","history","profile"]) {
+    document.getElementById("tab-" + t).classList.toggle("hidden", t !== tab);
+    document.getElementById("tabbtn-" + t).classList.toggle("active", t === tab);
+  }
+  if (tab === "history") renderHistory();
+  if (tab === "profile") renderProfileForm();
+  if (tab === "log") renderLog();
+}
+
+/* ==================== プロフィール ==================== */
+function renderProfileForm() {
+  const p = loadProfile();
+  if (p) {
+    document.getElementById("p-name").value = p.name || "";
+    document.getElementById("p-birth").value = p.birth || "";
+    document.getElementById("p-sex").value = p.sex || "m";
+    document.getElementById("p-weight").value = p.weight || "";
+  }
+  renderTargetsView();
+}
+function saveProfile() {
+  const birth = document.getElementById("p-birth").value;
+  const weight = parseFloat(document.getElementById("p-weight").value);
+  if (!birth) { alert("生年月日を入力してください"); return; }
+  if (!(weight > 0)) { alert("体重を入力してください"); return; }
+  if (new Date(birth) > new Date()) { alert("生年月日が未来の日付になっています"); return; }
+  const p = {
+    name: document.getElementById("p-name").value.trim(),
+    birth, weight,
+    sex: document.getElementById("p-sex").value,
+  };
+  saveProfileData(p);
+  renderTargetsView();
+  alert("プロフィールを保存しました。1日の目標量を更新しました。");
+  switchTab("log");
+}
+function renderTargetsView() {
+  const p = loadProfile();
+  const el = document.getElementById("targets-view");
+  if (!p) { el.innerHTML = '<p class="empty">プロフィールを保存すると表示されます。</p>'; return; }
+  const t = dailyTargets(p, todayStr());
+  const stage = stageInfo(t.months);
+  let rows = "";
+  NUTRIENTS.forEach(n => {
+    rows += `<tr><td>${n.name}</td><td>${fmt(t.values[n.key])} ${n.unit}</td></tr>`;
+  });
+  el.innerHTML = `
+    <p style="font-size:13px;margin-bottom:8px;">
+      月齢 <b>${t.months}か月</b>（${t.band.label}の基準）・<b class="stage" style="color:var(--series-1)">${stage.name}</b><br>
+      <span style="color:var(--muted);font-size:12px;">${stage.desc}</span>
+    </p>
+    <table class="targets-table">${rows}</table>
+    <p class="note">日本人の食事摂取基準（2020年版）の目安量・推奨量に基づき、体重で補正した概算値です。</p>`;
+}
+
+/* ==================== 記録タブ ==================== */
+function onDateChange() {
+  const v = document.getElementById("log-date").value;
+  if (v) { currentDate = v; renderLog(); }
+}
+function shiftDate(days) {
+  const d = new Date(currentDate);
+  d.setDate(d.getDate() + days);
+  currentDate = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  renderLog();
+}
+
+function populateFoodSelect(months) {
+  const sel = document.getElementById("in-food");
+  const prev = sel.value;
+  sel.innerHTML = "";
+  for (const cat of CATEGORIES) {
+    const foods = FOODS.filter(f => f.cat === cat && f.min <= months);
+    if (!foods.length) continue;
+    const og = document.createElement("optgroup");
+    og.label = cat;
+    for (const f of foods) {
+      const op = document.createElement("option");
+      op.value = f.id;
+      op.textContent = f.name;
+      og.appendChild(op);
+    }
+    sel.appendChild(og);
+  }
+  if (prev && FOOD_MAP[prev] && FOOD_MAP[prev].min <= months) sel.value = prev;
+  onFoodChange();
+}
+function onFoodChange() {
+  const f = FOOD_MAP[document.getElementById("in-food").value];
+  document.getElementById("in-unit").textContent = f ? f.unit : "g";
+  document.getElementById("food-note").textContent = f && f.note ? "⚠️ " + f.note : "";
+}
+document.getElementById("in-food").addEventListener("change", onFoodChange);
+
+function addItem() {
+  const p = loadProfile();
+  if (!p) { switchTab("profile"); return; }
+  const foodId = document.getElementById("in-food").value;
+  const amount = parseFloat(document.getElementById("in-amount").value);
+  if (!foodId) return;
+  if (!(amount > 0)) { alert("量を入力してください"); return; }
+  if (!records[currentDate]) records[currentDate] = { items: [], review: null };
+  records[currentDate].items.push({
+    id: Date.now() + "" + Math.floor(Math.random()*1000),
+    meal: document.getElementById("in-meal-type").value,
+    foodId, amount,
+  });
+  records[currentDate].review = null; // 記録が変わったら総評を作り直す
+  saveRecords(records);
+  document.getElementById("in-amount").value = "";
+  renderLog();
+}
+function removeItem(itemId) {
+  const rec = records[currentDate];
+  if (!rec) return;
+  rec.items = rec.items.filter(i => i.id !== itemId);
+  rec.review = null;
+  if (!rec.items.length) delete records[currentDate];
+  saveRecords(records);
+  renderLog();
+}
+function toggleDetail(itemId) {
+  const el = document.getElementById("detail-" + itemId);
+  if (el) el.classList.toggle("open");
+}
+
+const MEAL_ORDER = ["朝食","昼食","夕食","おやつ","ミルク"];
+const MEAL_ICONS = { "朝食":"🌅","昼食":"☀️","夕食":"🌙","おやつ":"🍪","ミルク":"🍼" };
+
+function renderMealList(targets) {
+  const el = document.getElementById("meal-list");
+  const rec = records[currentDate];
+  if (!rec || !rec.items.length) {
+    el.innerHTML = '<p class="empty">まだ記録がありません。上のフォームから追加しましょう。</p>';
+    return;
+  }
+  let html = "";
+  for (const meal of MEAL_ORDER) {
+    const items = rec.items.filter(i => i.meal === meal);
+    if (!items.length) continue;
+    html += `<div class="meal-block"><h3>${MEAL_ICONS[meal]} ${meal}</h3>`;
+    for (const item of items) {
+      const f = FOOD_MAP[item.foodId];
+      if (!f) continue;
+      const vals = itemNutrients(item);
+      let detailRows = "";
+      NUTRIENTS.forEach((n, i) => {
+        const tgt = targets.values[n.key];
+        const pct = tgt > 0 ? Math.round(vals[i] / tgt * 100) : 0;
+        detailRows += `<tr><td>${n.name}</td><td>${fmt(vals[i])} ${n.unit}</td><td>1日の目標の ${pct}%</td></tr>`;
+      });
+      html += `
+        <div class="item-row">
+          <div class="item-main" onclick="toggleDetail('${item.id}')">
+            <span><span class="fname">${esc(f.name)}</span> <span class="amt">${fmt(item.amount,0)}${f.unit}</span></span>
+            <span>
+              <span class="kcal">${fmt(vals[0])} kcal</span>
+              <button class="icon-btn" onclick="event.stopPropagation();removeItem('${item.id}')" title="削除">✕</button>
+            </span>
+          </div>
+          <div class="item-detail" id="detail-${item.id}"><table>${detailRows}</table></div>
+        </div>`;
+    }
+    html += `</div>`;
+  }
+  el.innerHTML = html;
+}
+
+function renderMeters(targets) {
+  const { totals } = dayTotals(currentDate);
+  const el = document.getElementById("meters");
+  let html = "";
+  NUTRIENTS.forEach(n => {
+    const tgt = targets.values[n.key];
+    const val = totals[n.key];
+    const pct = tgt > 0 ? val / tgt * 100 : 0;
+    const w = Math.min(100, pct);
+    const doneMark = pct >= 100 ? '<span class="done">✓ 達成</span>' : "";
+    html += `
+      <div class="meter">
+        <div class="meter-head">
+          <span class="nname">${n.name}</span>
+          <span><span class="nval">${fmt(val)} / ${fmt(tgt)} ${n.unit}</span><span class="npct">${Math.round(pct)}%</span>${doneMark}</span>
+        </div>
+        <div class="track"><div class="fill" style="width:${w}%"></div></div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+/* ==================== おすすめ食材（不足栄養素） ==================== */
+function renderRecommendations(targets) {
+  const { totals } = dayTotals(currentDate);
+  const el = document.getElementById("reco-list");
+  const months = targets.months;
+  const lows = NUTRIENTS
+    .map(n => ({ n, pct: targets.values[n.key] > 0 ? totals[n.key] / targets.values[n.key] * 100 : 100 }))
+    .filter(x => x.pct < 60)
+    .sort((a, b) => a.pct - b.pct);
+  if (!lows.length) {
+    el.innerHTML = '<p class="empty">現在、大きく不足している栄養素はありません。この調子です！ 🎉</p>';
+    return;
+  }
+  let html = "";
+  for (const { n, pct } of lows.slice(0, 5)) {
+    const idx = NUTRIENTS.indexOf(n);
+    const cands = FOODS
+      .filter(f => f.min <= months && f.n[idx] > 0)
+      .sort((a, b) => b.n[idx] - a.n[idx])
+      .slice(0, 4);
+    const chips = cands.map(f =>
+      `<span class="food-chip">${esc(f.name)} <small>${fmt(f.n[idx])}${n.unit}/100${f.unit}</small></span>`
+    ).join("");
+    html += `
+      <div class="reco">
+        <h3>${n.name}<span class="pct">達成率 ${Math.round(pct)}%</span></h3>
+        <div class="foods">${chips}</div>
+        <p class="advice">${NUTRIENT_ADVICE[n.key]}</p>
+      </div>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ==================== 1日の総評 ==================== */
+function makeReview() {
+  const p = loadProfile();
+  if (!p) { switchTab("profile"); return; }
+  const rec = records[currentDate];
+  if (!rec || !rec.items.length) {
+    alert("この日の記録がまだありません。食事やミルクを記録してから総評を作成しましょう。");
+    return;
+  }
+  const targets = dailyTargets(p, currentDate);
+  const { totals, milkEnergy } = dayTotals(currentDate);
+  const t = targets.values;
+  const months = targets.months;
+  const name = p.name ? p.name : "お子さま";
+
+  const pctOf = k => t[k] > 0 ? totals[k] / t[k] * 100 : 0;
+  const score = dayScore(currentDate, p);
+
+  let grade, gradeEmoji;
+  if (score >= 85)      { grade = "すばらしい1日でした！"; gradeEmoji = "🌟"; }
+  else if (score >= 70) { grade = "よくがんばりました！"; gradeEmoji = "😊"; }
+  else if (score >= 50) { grade = "あと少しでした。";     gradeEmoji = "🌱"; }
+  else                  { grade = "明日は少しずつ増やしていきましょう。"; gradeEmoji = "🍀"; }
+
+  const lines = [];
+
+  // エネルギー
+  const ePct = pctOf("energy");
+  if (ePct >= 120)     lines.push(`エネルギーは目標を大きく超えています（${Math.round(ePct)}%）。数日単位でみて調整できていれば大丈夫です。`);
+  else if (ePct >= 70) lines.push(`エネルギーはちょうど良い量がとれています（${Math.round(ePct)}%）。`);
+  else                 lines.push(`エネルギーがやや少なめです（${Math.round(ePct)}%）。おかゆやいも類、ミルクで補いましょう。`);
+
+  // よくとれた栄養素
+  const good = NUTRIENTS.filter(n => n.key !== "energy" && pctOf(n.key) >= 80).map(n => n.name);
+  if (good.length) lines.push(`${good.join("・")}はしっかりとれています。👏`);
+
+  // 不足栄養素
+  const low = NUTRIENTS.filter(n => n.key !== "energy" && pctOf(n.key) < 60).map(n => n.name);
+  if (low.length) lines.push(`${low.join("・")}が不足気味です。「専門家のおすすめ」の食材を明日のメニューの参考にしてください。`);
+  else if (!good.length) lines.push("全体的にバランスよくとれています。");
+
+  // ミルクと食事のバランス
+  const milkShare = totals.energy > 0 ? milkEnergy / totals.energy * 100 : 0;
+  if (months < 5) {
+    lines.push("この時期は母乳・ミルクだけで大丈夫。しっかり飲めていれば花マルです。");
+  } else if (months < 7) {
+    lines.push(`離乳食を始めたばかりの時期は、栄養の大半（エネルギーの約9割）をミルク・母乳からとるのが普通です（今日はミルクから約${Math.round(milkShare)}%）。食べる練習を楽しく続けましょう。`);
+  } else if (months < 9) {
+    lines.push(`この時期はエネルギーの6〜7割をミルク・母乳からとるのが目安です（今日は約${Math.round(milkShare)}%）。`);
+  } else if (months < 12) {
+    if (milkShare > 70) lines.push(`ミルクの割合が高めです（約${Math.round(milkShare)}%）。この時期は食事から半分以上とれるように、少しずつ食事の量を増やしていきましょう。`);
+    else lines.push(`食事とミルクのバランスが良いですね（ミルクは約${Math.round(milkShare)}%）。`);
+  } else if (milkShare > 50) {
+    lines.push(`完了期はミルクよりも食事が中心になる時期です（今日はミルクから約${Math.round(milkShare)}%）。牛乳・乳製品はおやつや料理で取り入れると良いですよ。`);
+  }
+
+  const stage = stageInfo(months);
+  const review = {
+    score, grade, gradeEmoji,
+    text: lines.join("\n"),
+    stageName: stage.name,
+    madeAt: new Date().toISOString(),
+  };
+  rec.review = review;
+  saveRecords(records);
+  renderReview();
+}
+function renderReview() {
+  const el = document.getElementById("review-area");
+  const rec = records[currentDate];
+  if (!rec || !rec.review) {
+    el.innerHTML = '<p class="empty">1日の終わりにボタンを押すと、その日の食事の総評を作成します。</p>';
+    return;
+  }
+  const r = rec.review;
+  el.innerHTML = `
+    <div class="review-box">
+      <div class="review-score">${r.gradeEmoji} ${r.score}点</div>
+      <b>${esc(r.grade)}</b>（${esc(r.stageName)}）
+      <br><br>${esc(r.text)}
+    </div>`;
+}
+
+/* ==================== 履歴タブ ==================== */
+function renderHistory() {
+  const p = loadProfile();
+  const el = document.getElementById("history-list");
+  const dates = Object.keys(records).filter(d => records[d].items.length).sort().reverse();
+  if (!p) { el.innerHTML = '<p class="empty">プロフィールを登録すると履歴が表示されます。</p>'; return; }
+  if (!dates.length) { el.innerHTML = '<p class="empty">まだ記録がありません。</p>'; return; }
+  const days = ["日","月","火","水","木","金","土"];
+  let html = "";
+  for (const d of dates) {
+    const score = dayScore(d, p);
+    const { totals } = dayTotals(d);
+    const dt = new Date(d);
+    html += `
+      <div class="hist-row" onclick="openDate('${d}')">
+        <span class="hdate">${d.replace(/-/g,"/")} (${days[dt.getDay()]})</span>
+        <div class="hbar"><div class="fill" style="width:${score}%"></div></div>
+        <span class="hpct">${score}%</span>
+        <span class="hkcal">${fmt(totals.energy)} kcal</span>
+      </div>`;
+  }
+  html += '<p class="note">達成率は主要8栄養素（エネルギー・たんぱく質・カルシウム・鉄・ビタミンA/D/C・亜鉛）の平均です。行をタップすると、その日の記録を開きます。</p>';
+  el.innerHTML = html;
+}
+function openDate(d) {
+  currentDate = d;
+  switchTab("log");
+}
+
+/* ==================== 記録タブ全体の描画 ==================== */
+function renderLog() {
+  const p = loadProfile();
+  const needProfile = !p;
+  document.getElementById("log-need-profile").classList.toggle("hidden", !needProfile);
+  document.getElementById("log-body").classList.toggle("hidden", needProfile);
+  if (needProfile) return;
+
+  document.getElementById("log-date").value = currentDate;
+  const targets = dailyTargets(p, currentDate);
+  const stage = stageInfo(targets.months);
+  document.getElementById("profile-banner").innerHTML = `
+    <span><b>${esc(p.name || "お子さま")}</b>　月齢 ${targets.months}か月・${p.weight}kg</span>
+    <span class="stage">${stage.name}</span>`;
+
+  populateFoodSelect(targets.months);
+  renderMealList(targets);
+  renderMeters(targets);
+  renderRecommendations(targets);
+  renderReview();
+}
+
+/* ==================== 起動 ==================== */
+renderLog();
+</script>
+</body>
+</html>
