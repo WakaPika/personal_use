@@ -308,6 +308,10 @@
       <label class="fld"><span class="lbl">現在の体重（kg）</span>
         <input type="number" id="p-weight" min="1" max="30" step="0.1" placeholder="例: 7.5">
       </label>
+      <label class="fld"><span class="lbl">離乳食の進み具合</span>
+        <select id="p-stage"></select>
+      </label>
+      <p class="note" style="margin-top:-4px;margin-bottom:12px;">離乳食の進み方はお子さまごとに差があります。「自動」では月齢から判定しますが、実際の進み具合に合わせて手動で選ぶと、食材リスト・おすすめ食材・総評に反映されます（栄養素の目標量は月齢に基づいて計算します）。</p>
       <button class="primary" onclick="saveProfile()">保存する</button>
     </section>
 
@@ -442,13 +446,33 @@ const BANDS = {
   "12-23":{ label:"1〜2歳",     refW:{m:11.5,f:11.0}, energy:{m:950,f:900},   protein:20, fatE:0.25, calcium:{m:450,f:400}, iron:{m:4.5,f:4.5}, vitA:{m:400,f:350}, vitD:3.2, vitC:40, zinc:3 },
   "24+":  { label:"3〜5歳",     refW:{m:16.5,f:16.1}, energy:{m:1300,f:1250}, protein:25, fatE:0.25, calcium:{m:600,f:550}, iron:{m:5.5,f:5.5}, vitA:{m:450,f:500}, vitD:3.8, vitC:50, zinc:4 },
 };
-function stageInfo(months) {
-  if (months < 5)  return { name:"授乳期", desc:"母乳・ミルクのみの時期" };
-  if (months < 7)  return { name:"ゴックン期（初期）", desc:"なめらかにすりつぶした状態・1日1〜2回食" };
-  if (months < 9)  return { name:"モグモグ期（中期）", desc:"舌でつぶせる固さ・1日2回食" };
-  if (months < 12) return { name:"カミカミ期（後期）", desc:"歯ぐきでつぶせる固さ・1日3回食" };
-  if (months < 19) return { name:"パクパク期（完了期）", desc:"歯ぐきで噛める固さ・1日3回食＋おやつ" };
-  return { name:"幼児食", desc:"薄味の幼児食に移行する時期" };
+/* 離乳食のステージ。months はそのステージの目安開始月齢で、
+   手動選択時は食材リストのフィルタ基準としても使う */
+const STAGES = [
+  { id:"pre",      name:"授乳期",             months:0,  desc:"母乳・ミルクのみの時期（離乳食開始前）" },
+  { id:"gokkun",   name:"ゴックン期（初期）",   months:5,  desc:"なめらかにすりつぶした状態・1日1〜2回食" },
+  { id:"mogumogu", name:"モグモグ期（中期）",   months:7,  desc:"舌でつぶせる固さ・1日2回食" },
+  { id:"kamikami", name:"カミカミ期（後期）",   months:9,  desc:"歯ぐきでつぶせる固さ・1日3回食" },
+  { id:"pakupaku", name:"パクパク期（完了期）", months:12, desc:"歯ぐきで噛める固さ・1日3回食＋おやつ" },
+  { id:"youji",    name:"幼児食",             months:19, desc:"薄味の幼児食に移行する時期" },
+];
+function stageByMonths(months) {
+  let s = STAGES[0];
+  for (const st of STAGES) if (months >= st.months) s = st;
+  return s;
+}
+// プロフィールの手動設定があればそれを、なければ月齢から判定したステージを返す
+function currentStage(profile, months) {
+  if (profile && profile.stage && profile.stage !== "auto") {
+    const s = STAGES.find(x => x.id === profile.stage);
+    if (s) return { ...s, manual: true };
+  }
+  return { ...stageByMonths(months), manual: false };
+}
+// 食材リスト・おすすめ・総評コメントの基準月齢（手動設定時はステージの開始月齢）
+function effectiveMonths(profile, months) {
+  const s = currentStage(profile, months);
+  return s.manual ? s.months : months;
 }
 
 // 生年月日 → 月齢
@@ -552,13 +576,29 @@ function switchTab(tab) {
 }
 
 /* ==================== プロフィール ==================== */
+function populateStageSelect() {
+  const sel = document.getElementById("p-stage");
+  if (sel.options.length) return;
+  const opAuto = document.createElement("option");
+  opAuto.value = "auto";
+  opAuto.textContent = "自動（月齢から判定）";
+  sel.appendChild(opAuto);
+  for (const s of STAGES) {
+    const op = document.createElement("option");
+    op.value = s.id;
+    op.textContent = s.name;
+    sel.appendChild(op);
+  }
+}
 function renderProfileForm() {
+  populateStageSelect();
   const p = loadProfile();
   if (p) {
     document.getElementById("p-name").value = p.name || "";
     document.getElementById("p-birth").value = p.birth || "";
     document.getElementById("p-sex").value = p.sex || "m";
     document.getElementById("p-weight").value = p.weight || "";
+    document.getElementById("p-stage").value = p.stage || "auto";
   }
   renderTargetsView();
 }
@@ -572,6 +612,7 @@ function saveProfile() {
     name: document.getElementById("p-name").value.trim(),
     birth, weight,
     sex: document.getElementById("p-sex").value,
+    stage: document.getElementById("p-stage").value || "auto",
   };
   saveProfileData(p);
   renderTargetsView();
@@ -583,14 +624,14 @@ function renderTargetsView() {
   const el = document.getElementById("targets-view");
   if (!p) { el.innerHTML = '<p class="empty">プロフィールを保存すると表示されます。</p>'; return; }
   const t = dailyTargets(p, todayStr());
-  const stage = stageInfo(t.months);
+  const stage = currentStage(p, t.months);
   let rows = "";
   NUTRIENTS.forEach(n => {
     rows += `<tr><td>${n.name}</td><td>${fmt(t.values[n.key])} ${n.unit}</td></tr>`;
   });
   el.innerHTML = `
     <p style="font-size:13px;margin-bottom:8px;">
-      月齢 <b>${t.months}か月</b>（${t.band.label}の基準）・<b class="stage" style="color:var(--series-1)">${stage.name}</b><br>
+      月齢 <b>${t.months}か月</b>（${t.band.label}の基準）・<b class="stage" style="color:var(--series-1)">${stage.name}</b>${stage.manual ? '<span style="color:var(--muted);font-size:11px;">（手動設定）</span>' : ""}<br>
       <span style="color:var(--muted);font-size:12px;">${stage.desc}</span>
     </p>
     <table class="targets-table">${rows}</table>
@@ -733,10 +774,10 @@ function renderMeters(targets) {
 }
 
 /* ==================== おすすめ食材（不足栄養素） ==================== */
-function renderRecommendations(targets) {
+function renderRecommendations(targets, effMonths) {
   const { totals } = dayTotals(currentDate);
   const el = document.getElementById("reco-list");
-  const months = targets.months;
+  const months = effMonths;
   const lows = NUTRIENTS
     .map(n => ({ n, pct: targets.values[n.key] > 0 ? totals[n.key] / targets.values[n.key] * 100 : 100 }))
     .filter(x => x.pct < 60)
@@ -777,7 +818,7 @@ function makeReview() {
   const targets = dailyTargets(p, currentDate);
   const { totals, milkEnergy } = dayTotals(currentDate);
   const t = targets.values;
-  const months = targets.months;
+  const months = effectiveMonths(p, targets.months);
   const name = p.name ? p.name : "お子さま";
 
   const pctOf = k => t[k] > 0 ? totals[k] / t[k] * 100 : 0;
@@ -821,7 +862,7 @@ function makeReview() {
     lines.push(`完了期はミルクよりも食事が中心になる時期です（今日はミルクから約${Math.round(milkShare)}%）。牛乳・乳製品はおやつや料理で取り入れると良いですよ。`);
   }
 
-  const stage = stageInfo(months);
+  const stage = currentStage(p, targets.months);
   const review = {
     score, grade, gradeEmoji,
     text: lines.join("\n"),
@@ -887,15 +928,16 @@ function renderLog() {
 
   document.getElementById("log-date").value = currentDate;
   const targets = dailyTargets(p, currentDate);
-  const stage = stageInfo(targets.months);
+  const stage = currentStage(p, targets.months);
+  const effMonths = effectiveMonths(p, targets.months);
   document.getElementById("profile-banner").innerHTML = `
     <span><b>${esc(p.name || "お子さま")}</b>　月齢 ${targets.months}か月・${p.weight}kg</span>
-    <span class="stage">${stage.name}</span>`;
+    <span class="stage" onclick="switchTab('profile')" style="cursor:pointer;" title="タップで変更">${stage.name}${stage.manual ? ' ✎' : ''}</span>`;
 
-  populateFoodSelect(targets.months);
+  populateFoodSelect(effMonths);
   renderMealList(targets);
   renderMeters(targets);
-  renderRecommendations(targets);
+  renderRecommendations(targets, effMonths);
   renderReview();
 }
 
