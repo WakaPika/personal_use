@@ -19,6 +19,7 @@ export function sharedDefs() {
 ${head('ah-self', 'mk-self')}${head('ah-opp', 'mk-opp')}${head('ah-n', 'mk-n')}
 ${head('ap-self', 'mks-self', true)}${head('ap-opp', 'mks-opp', true)}
 ${hatch('hz-self', 'hz-self')}${hatch('hz-opp', 'hz-opp')}${hatch('hz-n', 'hz-n')}
+<clipPath id="cp-pitch" clipPathUnits="userSpaceOnUse"><rect x="-6" y="-6" width="${W + 12}" height="${L + 12}"/></clipPath>
 </defs></svg>`;
 }
 
@@ -125,7 +126,7 @@ export function renderPitch(opts) {
       case 'shadow': {
         const [ax, ay] = P(o.a);
         const [bx, by] = P(o.b);
-        const len = Math.hypot(bx - ax, by - ay) + 70;
+        const len = Math.hypot(bx - ax, by - ay) + 45;
         const ang = Math.atan2(by - ay, bx - ax);
         const half = (o.spread || 13) * (Math.PI / 180);
         const p1 = [ax + Math.cos(ang - half) * len, ay + Math.sin(ang - half) * len];
@@ -196,7 +197,8 @@ export function renderPitch(opts) {
         const sign = diff > 0 ? `+${diff}` : diff < 0 ? `−${-diff}` : '=';
         const s = diff > 0 ? 'self' : diff < 0 ? 'opp' : 'n';
         const main = `${mine}v${theirs}`;
-        const lab = o.label ? `${o.label} ` : '';
+        const rawLab = o.label && typeof o.label === 'object' ? o.label[self] : o.label;
+        const lab = rawLab ? `${rawLab} ` : '';
         const text = `${lab}${main}${o.note ? ` ${o.note}` : ''}`;
         const size = 21;
         const w1 = textWidth(text, size) + 18;
@@ -277,7 +279,7 @@ export function renderPitch(opts) {
 <title id="${tId}">${esc(title)}</title><desc id="${dId}">${esc(desc)}</desc>
 ${pitchMarkup()}${lanesMarkup()}
 <g class="layer l-zone">${g.zone.join('')}</g>
-<g class="layer l-press">${g.shadow.join('')}</g>
+<g class="layer l-press" clip-path="url(#cp-pitch)">${g.shadow.join('')}</g>
 <g class="layer l-mark">${g.mark.join('')}</g>
 <g class="layer l-move">${g.move.join('')}</g>
 <g class="layer l-press">${g.press.join('')}</g>

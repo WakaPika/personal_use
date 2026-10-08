@@ -241,8 +241,8 @@ export default {
         { t: 'mark', a: 'A:LB', b: 'B:RM' },
         { t: 'mark', a: 'A:RB', b: 'B:LM' },
         { t: 'count', at: [50, 48], a: 3, b: 2, label: '中央MF' },
-        { t: 'count', at: [50, 24], a: 3, b: 2, label: '第1ライン' },
-        { t: 'count', at: [50, 89], a: 3, b: 4, label: '最前線' },
+        { t: 'count', at: [50, 24], a: 3, b: 2, label: { A: 'ビルドアップ', B: 'プレス' } },
+        { t: 'count', at: [50, 89], a: 3, b: 4, label: { A: '最前線', B: '最終ライン' } },
       ],
     },
     {
@@ -262,7 +262,7 @@ export default {
         { t: 'pass', from: 'A:LCB', to: 'A:DM' },
         { t: 'pass', from: 'A:DM', to: 'A:LCM', curve: -0.15 },
         { t: 'free', who: 'A:DM', label: 'フリー', lpos: 'r' },
-        { t: 'count', at: [50, 41], a: 3, b: 2, label: '第1ライン' },
+        { t: 'count', at: [50, 41], a: 3, b: 2, label: { A: 'ビルドアップ', B: 'プレス' } },
       ],
     },
     {
@@ -305,7 +305,7 @@ export default {
         { t: 'mark', a: 'A:LB', b: 'B:RB' },
         { t: 'free', who: 'B:GK', label: 'GKで+1' },
         { t: 'pass', from: 'B:RCB', to: 'B:RS', curve: 0.18, label: 'ロングボール' },
-        { t: 'count', at: [50, 22], a: 3, b: 2, label: '背後' },
+        { t: 'count', at: [50, 22], a: 3, b: 2, label: { A: '背後', B: '最前線' } },
       ],
     },
     {
@@ -344,7 +344,7 @@ export default {
         { t: 'pass', from: 'B:LCM', to: 'B:LS' },
         { t: 'run', from: 'B:LS', to: [76, 40], curve: -0.1 },
         { t: 'danger', at: [78, 44], label: 'SBの裏' },
-        { t: 'count', at: [50, 37], a: 3, b: 2, label: '残り守備' },
+        { t: 'count', at: [50, 37], a: 3, b: 2, label: { A: '残り守備', B: 'カウンター' } },
       ],
     },
     {
@@ -364,7 +364,7 @@ export default {
         { t: 'run', from: 'A:ST', to: [52, 68] },
         { t: 'run', from: 'A:RW', to: [74, 70], curve: 0.1 },
         { t: 'free', who: 'A:LW', label: 'フリー' },
-        { t: 'count', at: [50, 86], a: 3, b: 2, label: '前線' },
+        { t: 'count', at: [50, 86], a: 3, b: 2, label: { A: 'カウンター', B: '残り守備' } },
       ],
     },
     {
@@ -383,7 +383,7 @@ export default {
         { t: 'run', from: 'A:LCB', to: [33, 30], label: '運ぶ' },
         { t: 'run', from: 'A:LCM', to: [38, 42], label: '8番が降りる' },
         { t: 'free', who: 'A:LCB', label: 'フリー' },
-        { t: 'count', at: [77, 26], a: 2, b: 1, label: '第1ライン' },
+        { t: 'count', at: [77, 26], a: 2, b: 1, label: { A: 'ビルドアップ', B: 'プレス' } },
       ],
     },
     {
@@ -404,7 +404,7 @@ export default {
         { t: 'press', from: 'B:RCM', to: 'A:LB' },
         { t: 'pass', from: 'A:LB', to: 'A:LCM', curve: 0.15 },
         { t: 'free', who: 'A:LCM', label: 'CMの背後' },
-        { t: 'count', at: [81, 31], a: 5, b: 2, label: '後方' },
+        { t: 'count', at: [81, 31], a: 5, b: 2, label: { A: '後方', B: 'プレス' } },
       ],
     },
   ],

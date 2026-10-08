@@ -113,7 +113,8 @@ function describeOverlays(resolved, ctx) {
         const mine = ctx.self === 'A' ? o.a : o.b;
         const theirs = ctx.self === 'A' ? o.b : o.a;
         const d = mine - theirs;
-        items.push(`人数関係：${o.label || ''} 自${mine} 対 相手${theirs}（${d > 0 ? `自チーム+${d}` : d < 0 ? `相手+${-d}` : '同数'}）`);
+        const lab = o.label && typeof o.label === 'object' ? o.label[ctx.self] : o.label;
+        items.push(`人数関係：${lab || ''} 自${mine} 対 相手${theirs}（${d > 0 ? `自チーム+${d}` : d < 0 ? `相手+${-d}` : '同数'}）`);
         break;
       }
       case 'note': items.push(`注記：${o.text}`); break;
