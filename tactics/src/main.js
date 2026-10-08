@@ -128,6 +128,11 @@ function render() {
 function onRoute() {
   const prev = state.route;
   state.route = parseRoute(location.hash);
+  // 用語へのリンクで開いたときは、検索・分類の絞り込みを解除して必ず表示する
+  if (state.route.view === 'glossary' && state.route.term) {
+    state.glossaryQ = '';
+    state.glossaryCat = 'all';
+  }
   closeSheet(false);
   render();
   const sameMatchup = prev && prev.view === 'matchup' && state.route.view === 'matchup';
@@ -324,3 +329,4 @@ document.addEventListener('keydown', (ev) => {
 
 window.addEventListener('hashchange', onRoute);
 onRoute();
+try { performance.mark('ml-first-render'); } catch { /* 計測できない環境では無視 */ }

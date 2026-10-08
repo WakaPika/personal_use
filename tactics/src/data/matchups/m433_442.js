@@ -290,7 +290,7 @@ export default {
       id: 'oop-press', tab: 'ip', poss: 'B',
       title: '{B}のビルドアップ vs {A}のハイプレス',
       short: 'ハイプレス',
-      caption: '{A}はWGがCBとSBの間から寄せてSBへのコースを消し、CFが逆CBへのパスを切る。8番はCMへジャンプ。{B}の逃げ道はGK経由の逆サイドか、2トップへのロングボール。',
+      caption: '{A}はWGがCBとSBの間から寄せてSBへのコースを消し、CFが逆CBへのパスを切る。8番はCMへジャンプ。{B}の逃げ道はGK経由の逆サイドか、2トップへのロングボール（6番とSBが前に出ているため、背後は2CB vs 2トップの2v2）。',
       ball: 'B:RCB',
       teams: {
         A: { from: 'oop.high', tweak: { GK: [50, 10], LCB: [40, 32], RCB: [60, 32], LB: [16, 58], RB: [84, 56], DM: [50, 58], LCM: [36, 76], RCM: [62, 76], LW: [22, 80], ST: [50, 84], RW: [80, 80] } },
@@ -305,7 +305,7 @@ export default {
         { t: 'mark', a: 'A:LB', b: 'B:RB' },
         { t: 'free', who: 'B:GK', label: 'GKで+1' },
         { t: 'pass', from: 'B:RCB', to: 'B:RS', curve: 0.18, label: 'ロングボール' },
-        { t: 'count', at: [50, 22], a: 3, b: 2, label: { A: '背後', B: '最前線' } },
+        { t: 'count', at: [50, 22], a: 2, b: 2, label: { A: '背後', B: '最前線' } },
       ],
     },
     {
