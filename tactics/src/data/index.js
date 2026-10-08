@@ -5,7 +5,8 @@ import f4231 from './formations/f4231.js';
 import f4141 from './formations/f4141.js';
 import f352 from './formations/f352.js';
 import f532 from './formations/f532.js';
-import { f3421, f343, f541 } from './formations/planned.js';
+import f3421 from './formations/f3421.js';
+import { f343, f541 } from './formations/planned.js';
 
 import m433_442 from './matchups/m433_442.js';
 import m442_4231 from './matchups/m442_4231.js';
@@ -13,6 +14,7 @@ import m352_433 from './matchups/m352_433.js';
 import m4231_4141 from './matchups/m4231_4141.js';
 import m532_433 from './matchups/m532_433.js';
 import m4141_352 from './matchups/m4141_352.js';
+import m433_4231 from './matchups/m433_4231.js';
 
 export { sources, sourceById } from './sources.js';
 export { glossary, GLOSSARY_CATEGORIES } from './glossary.js';
@@ -21,7 +23,7 @@ export const formationList = [f433, f442, f4231, f4141, f352, f532, f3421, f343,
 export const formations = Object.fromEntries(formationList.map((f) => [f.id, f]));
 export const activeFormations = formationList.filter((f) => f.status === 'analysis');
 
-export const matchupList = [m433_442, m442_4231, m352_433, m4231_4141, m532_433, m4141_352].filter(Boolean);
+export const matchupList = [m433_442, m442_4231, m352_433, m4231_4141, m532_433, m4141_352, m433_4231].filter(Boolean);
 
 const pairKey = (x, y) => `${x}|${y}`;
 const byPair = new Map();

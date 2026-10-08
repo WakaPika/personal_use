@@ -63,7 +63,8 @@ for (const m of matchupList) {
   const fB = formations[m.teams.B];
   if (!fA || !fB) { err(`${w}: チームが未登録`); continue; }
   scanText(w, m);
-  for (const t of ['A', 'B']) {
+  const mirror = m.teams.A === m.teams.B; // 同型対決は常に A 視点で表示する
+  for (const t of mirror ? ['A'] : ['A', 'B']) {
     if (!m.thesis?.[t]) err(`${w}: thesis.${t} がない`);
     const qw = m.quickWatch?.[t];
     if (!qw || qw.length !== 3) err(`${w}: quickWatch.${t} が3点ではない`);
@@ -84,7 +85,7 @@ for (const m of matchupList) {
     if (!['overview', 'ip', 'tr', 'adjust'].includes(sc.tab)) err(`${w} ${sc.id}: tab が不正`);
     if (sc.tab !== 'overview' && !['A', 'B'].includes(sc.poss)) err(`${w} ${sc.id}: poss が不正`);
     let res;
-    try { res = resolveScene(formations, m, sc); } catch (e) { err(`${w} ${sc.id}: ${e.message}`); continue; }
+    try { res = resolveScene(formations, m, sc, { relax: !!sc.relax }); } catch (e) { err(`${w} ${sc.id}: ${e.message}`); continue; }
     const byTeam = { A: res.players.filter((p) => p.team === 'A'), B: res.players.filter((p) => p.team === 'B') };
     if (res.players.length !== 22 || byTeam.A.length !== 11 || byTeam.B.length !== 11) err(`${w} ${sc.id}: 選手数 ${res.players.length}`);
     for (const t of ['A', 'B']) if (byTeam[t].filter((p) => p.label === 'GK').length !== 1) err(`${w} ${sc.id}: ${t} の GK が1人ではない`);
@@ -99,7 +100,7 @@ for (const m of matchupList) {
       }
     }
     if (sc.tab === 'overview' && m.quickWatch) {
-      for (const t of ['A', 'B']) for (const q of m.quickWatch[t]) {
+      for (const t of mirror ? ['A'] : ['A', 'B']) for (const q of m.quickWatch[t]) {
         for (const p of res.players) if (metersBetween(q.at, [p.x, p.y]) < 4.9) err(`${w} overview: 3点マーカー「${q.text.slice(0, 10)}…」(${t}) が ${p.key} と重なる`);
       }
     }

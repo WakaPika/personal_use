@@ -8,28 +8,6 @@ const back3 = [
   { id: 'RCB', label: 'CB', name: '右CB', line: 'DF', lane: 'central' },
 ];
 
-export const f3421 = {
-  id: '3-4-2-1',
-  status: 'planned',
-  family: 'back3',
-  alias: '3バック＋2シャドー＋1トップ',
-  summary: '3CB＋WB＋ダブルボランチ＋2シャドー＋1トップ。分析は準備中。',
-  slots: [
-    ...back3,
-    { id: 'LWB', label: 'WB', name: '左WB', line: 'MF', lane: 'wide' },
-    { id: 'LDM', label: 'DM', name: '左ボランチ', line: 'MF', lane: 'central' },
-    { id: 'RDM', label: 'DM', name: '右ボランチ', line: 'MF', lane: 'central' },
-    { id: 'RWB', label: 'WB', name: '右WB', line: 'MF', lane: 'wide' },
-    { id: 'LAM', label: '10', name: '左シャドー', line: 'FW', lane: 'central' },
-    { id: 'RAM', label: '10', name: '右シャドー', line: 'FW', lane: 'central' },
-    { id: 'ST', label: 'CF', name: 'CF', line: 'FW', lane: 'central' },
-  ],
-  shapes: [
-    { id: 'base', label: '基本配置 3-4-2-1', note: '公称配置。', pos: { GK: [50, 4], LCB: [29, 19], CB: [50, 16], RCB: [71, 19], LWB: [9, 45], LDM: [40, 37], RDM: [60, 37], RWB: [91, 45], LAM: [33, 60], RAM: [67, 60], ST: [50, 71] } },
-  ],
-  sources: [],
-};
-
 export const f343 = {
   id: '3-4-3',
   status: 'planned',

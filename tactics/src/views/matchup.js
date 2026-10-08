@@ -35,7 +35,9 @@ function header(selfId, oppId) {
     <button class="team-btn tb-self" data-act="pick" data-side="self" aria-label="自チームのシステムを変更（現在 ${esc(selfId)}）">
       <span class="tb-k"><i class="sym sym-self" aria-hidden="true"></i>自チーム</span><span class="tb-v">${esc(selfId)}${icon.chevron}</span>
     </button>
-    <button class="swap-btn" data-act="swap" aria-label="自チームと相手を入れ替える">${icon.swap}<span>入替</span></button>
+    ${selfId === oppId
+      ? `<button class="swap-btn" disabled aria-disabled="true" aria-label="同型対決のため入れ替えなし">${icon.swap}<span>同型</span></button>`
+      : `<button class="swap-btn" data-act="swap" aria-label="自チームと相手を入れ替える">${icon.swap}<span>入替</span></button>`}
     <button class="team-btn tb-opp" data-act="pick" data-side="opp" aria-label="相手のシステムを変更（現在 ${esc(oppId)}）">
       <span class="tb-k"><i class="sym sym-opp" aria-hidden="true"></i>相手</span><span class="tb-v">${esc(oppId)}${icon.chevron}</span>
     </button>

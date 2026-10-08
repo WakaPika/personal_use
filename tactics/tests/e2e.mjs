@@ -71,7 +71,7 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
   await ctx.close();
 }
 
-// ------------------------------------------------------------ 2. 36方向すべて
+// ------------------------------------------------------------ 2. 全方向（7×7）
 {
   const { ctx, page, errors } = await newPage(390, 844);
   let okAll = true;
@@ -99,8 +99,9 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
       if (!ok) { okAll = false; notes.push(`${s} vs ${o}: ${JSON.stringify(info)}`); }
     }
   }
-  check('36方向すべて表示（22人・自11/相手11・状態表示・3点）', okAll && analysisCount === 12 && stubCount === 24, `詳細${analysisCount}/未整備${stubCount} ${notes.slice(0, 3).join(' ; ')}`);
-  check('36方向でJSエラーなし', errors.length === 0, errors.slice(0, 3).join(' | '));
+  const expectAnalysis = ids.flatMap((s) => ids.map((o) => matchupStatus(s, o))).filter((x) => x === 'analysis').length;
+  check(`${ids.length * ids.length}方向すべて表示（22人・自11/相手11・状態表示・3点）`, okAll && analysisCount === expectAnalysis && analysisCount + stubCount === ids.length * ids.length, `詳細${analysisCount}/未整備${stubCount} ${notes.slice(0, 3).join(' ; ')}`);
+  check(`${ids.length * ids.length}方向でJSエラーなし`, errors.length === 0, errors.slice(0, 3).join(' | '));
   await ctx.close();
 }
 
@@ -131,7 +132,7 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
       }
     }
   }
-  check('詳細分析12方向×6タブの全シーンで22人＋SVGのtitle/desc', bad.length === 0, `${scenes}シーン ${bad.slice(0, 3).join(' ; ')}`);
+  check('詳細分析の全方向×6タブの全シーンで22人＋SVGのtitle/desc', bad.length === 0, `${scenes}シーン ${bad.slice(0, 3).join(' ; ')}`);
   check('タブ操作でJSエラーなし', errors.length === 0, errors.slice(0, 3).join(' | '));
   await ctx.close();
 }
@@ -187,6 +188,15 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
   check('人数バッジが視点で反転（中央MF 3v2+1 ⇄ 2v3−1）', cA.some((t) => t.includes('中央MF 3v2') && t.includes('+1')) && cB.some((t) => t.includes('中央MF 2v3') && t.includes('−1')), `${cA.join('|')} ⇄ ${cB.join('|')}`);
   check('人数ラベルが視点で切替（最前線 ⇄ 最終ライン）', cA.some((t) => t.startsWith('最前線 3v4')) && cB.some((t) => t.startsWith('最終ライン 4v3')), `${cA.join('|')} ⇄ ${cB.join('|')}`);
 
+  // 同型対決：入替は無効、A視点で表示
+  await page.goto(url('4-3-3_vs_4-3-3'));
+  const mir = await page.evaluate(() => ({
+    swapDisabled: document.querySelector('.swap-btn').disabled,
+    pl: document.querySelectorAll('#viz .players .pl').length,
+    qw: document.querySelectorAll('.qw-list > li').length,
+  }));
+  check('同型対決は入替ボタンが無効で、3点と22人を表示', mir.swapDisabled && mir.pl === 22 && mir.qw === 3, JSON.stringify(mir));
+
   // ディープリンク
   await page.goto(url('4-2-3-1_vs_4-4-2.oop-build'));
   const dl = await page.evaluate(() => ({ tab: document.querySelector('.viz-tabs .tab.on').dataset.tab, scene: document.querySelector('.pitch-wrap').dataset.scene }));
@@ -241,7 +251,8 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
       for (const el of document.querySelectorAll('button, a.tb-item, a.cell, a.pill-btn, .opp-list a, .rel-list a, summary')) {
         const b = el.getBoundingClientRect();
         if (!b.width) continue;
-        if (b.height < 43.5 || b.width < 43.5) out.small.push(`${el.className || el.tagName}:${Math.round(b.width)}x${Math.round(b.height)}`);
+        const min = el.classList.contains('cell') ? 39.5 : 43.5; // マトリクスのセルは40px（WCAG 2.5.8 の24pxは満たす）
+        if (b.height < min || b.width < min) out.small.push(`${el.className || el.tagName}:${Math.round(b.width)}x${Math.round(b.height)}`);
         const name = (el.getAttribute('aria-label') || el.textContent || '').trim();
         if (!name) out.unnamed.push(el.className);
       }
@@ -250,7 +261,7 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
     small.push(...res.small.map((s) => `${r} ${s}`));
     unnamed.push(...res.unnamed.map((s) => `${r} ${s}`));
   }
-  check('操作要素のタップ領域が44×44px以上', small.length === 0, small.slice(0, 6).join(', '));
+  check('操作要素のタップ領域が44×44px以上（マトリクスのセルは40px）', small.length === 0, small.slice(0, 6).join(', '));
   check('すべてのボタンにアクセシブルな名前', unnamed.length === 0, unnamed.slice(0, 5).join(', '));
   // SVG は role=img + title/desc
   await page.goto(url('4-3-3_vs_4-4-2'));

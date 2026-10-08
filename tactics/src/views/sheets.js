@@ -35,7 +35,7 @@ export function selectorSheet({ selfId, oppId, side, recent }) {
       <button role="tab" aria-selected="${side === 'opp'}" class="${side === 'opp' ? 'on' : ''}" data-act="side" data-side="opp"><i class="sym sym-opp" aria-hidden="true"></i>相手 <b>${esc(oppId)}</b></button>
     </div>
     <div class="f-grid">${chips}</div>
-    <h3 class="sheet-sub">全36方向から一度に選ぶ<small>行＝自チーム／列＝相手</small></h3>
+    <h3 class="sheet-sub">全${ids.length * ids.length}方向から一度に選ぶ<small>行＝自チーム／列＝相手</small></h3>
     ${matrix}
     <p class="legend-line"><span class="cell-l c-analysis">◆</span>詳細分析 β　<span class="cell-l c-stub">・</span>未整備</p>
     ${rec.length ? `<h3 class="sheet-sub">最近見た組み合わせ</h3><div class="pills wrap">${rec

@@ -49,9 +49,9 @@ export function renderSystems() {
       .join('')}</tbody></table></div>
     <p class="legend-line"><span class="cell-l c-analysis">◆</span>詳細分析 β　<span class="cell-l c-stub">・</span>未整備（公称配置の比較のみ）</p>`;
   return {
-    head: sysHeader('システム', '6種＋拡張予定3種'),
+    head: sysHeader('システム', `${activeFormations.length}種＋拡張予定${formationList.length - activeFormations.length}種`),
     main: `<div class="page">
-      <section class="sec"><h2 class="sec-h">全36方向の噛み合わせ</h2>${matrix}</section>
+      <section class="sec"><h2 class="sec-h">全${ids.length * ids.length}方向の噛み合わせ</h2>${matrix}</section>
       <section class="sec"><h2 class="sec-h">システム一覧</h2><div class="sys-grid">${formationList.map(card).join('')}</div></section>
     </div>`,
   };

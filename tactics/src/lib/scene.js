@@ -29,8 +29,9 @@ function resolveTeam(team, formation, spec) {
     let [x, y] = toScene(team, raw);
     x += sx;
     y += sy;
-    if (spec.tweak && spec.tweak[slot.id]) [x, y] = spec.tweak[slot.id];
-    return { key: `${team}:${slot.id}`, team, id: slot.id, label: slot.label, name: slot.name, x, y };
+    const pinned = !!(spec.tweak && spec.tweak[slot.id]);
+    if (pinned) [x, y] = spec.tweak[slot.id];
+    return { key: `${team}:${slot.id}`, team, id: slot.id, label: slot.label, name: slot.name, x, y, pinned };
   });
   return players;
 }
@@ -124,10 +125,14 @@ export function resolveScene(formations, matchup, scene, { relax = false } = {})
   return { players, byKey, overlays, ball };
 }
 
-/** 重なった選手を最小限だけ押し離す（未整備マッチアップの機械的な重ね合わせ用） */
-export function relaxPositions(players, gap = PLAYER_MIN_GAP_M) {
+/**
+ * 重なった選手を最小限だけ押し離す。
+ * tweak で位置を指定した選手（pinned）は動かさず、相手側だけを動かす。
+ * シーンに relax: true を付けると、形（shape）同士の機械的な重なりを自動で解消できる。
+ */
+export function relaxPositions(players, gap = PLAYER_MIN_GAP_M + 0.25) {
   const ps = players.map((p) => ({ ...p }));
-  for (let iter = 0; iter < 40; iter++) {
+  for (let iter = 0; iter < 80; iter++) {
     let moved = false;
     for (let i = 0; i < ps.length; i++) {
       for (let j = i + 1; j < ps.length; j++) {
@@ -143,7 +148,10 @@ export function relaxPositions(players, gap = PLAYER_MIN_GAP_M) {
           // 主に横方向へ逃がす（縦の配置＝ラインの高さを保つ）
           const hx = (ux * push * 1.0 * 100) / PITCH.width;
           const hy = (uy * push * 0.6 * 100) / PITCH.length;
-          a.x -= hx; a.y -= hy; b.x += hx; b.y += hy;
+          // pinned 側は動かさず、もう一方を2倍動かす
+          const wa = a.pinned && !b.pinned ? 0 : b.pinned && !a.pinned ? 2 : 1;
+          const wb = 2 - wa;
+          a.x -= hx * wa; a.y -= hy * wa; b.x += hx * wb; b.y += hy * wb;
           moved = true;
         }
       }
