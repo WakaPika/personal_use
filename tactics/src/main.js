@@ -135,8 +135,10 @@ function onRoute() {
   }
   closeSheet(false);
   render();
-  const sameMatchup = prev && prev.view === 'matchup' && state.route.view === 'matchup';
-  if (!sameMatchup) window.scrollTo(0, 0);
+  // 視点の入れ替え（同じ組み合わせ）だけは読んでいた位置を保つ。別の組み合わせ・別画面は先頭へ
+  const r = state.route;
+  const samePair = prev && prev.view === 'matchup' && r.view === 'matchup' && [prev.self, prev.opp].sort().join() === [r.self, r.opp].sort().join();
+  if (!samePair) window.scrollTo(0, 0);
 }
 
 // ------------------------------------------------------------ viz updates
