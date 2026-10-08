@@ -1,0 +1,16 @@
+import { chromium } from './pw.mjs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const out = process.argv[2];
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+await page.goto(`file://${root}/dist/index.html#4-3-3_vs_4-4-2`);
+await page.click('.tb-opp');
+await page.waitForTimeout(250);
+await page.screenshot({ path: path.join(out, 'sheet-selector.png') });
+await page.click('[data-act="sheet-close"].icon-btn');
+await page.click('[data-act="legend"]');
+await page.waitForTimeout(250);
+await page.screenshot({ path: path.join(out, 'sheet-legend.png'), fullPage: false });
+await browser.close();
