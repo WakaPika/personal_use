@@ -43,7 +43,7 @@ export default {
   ],
   restDefence: {
     A: { shape: '2CB＋CM2枚（2+2）', vs: '{B}の2トップ', a: 4, b: 2, note: 'CMの1枚が攻撃に加わると2+1になり、2トップに対してCBが2v2で受ける。' },
-    B: { shape: '3CB＋6番（3+1）', vs: '{A}の2トップ', a: 4, b: 2, note: '数は足りるが、WBが上がった背後へ{A}のSHが出ると、外CBが外へ引き出される。' },
+    B: { shape: '3CB＋6番（3+1）', vs: '{A}の2トップ', a: 2, b: 4, note: '数は足りるが、WBが上がった背後へ{A}のSHが出ると、外CBが外へ引き出される。' },
   },
   duels: [
     { a: 'SH＋SB', b: 'WB', text: '大外の2v1。WBがどちらに出るかで、背後か内側が空く。', scene: 'ip-wide' },

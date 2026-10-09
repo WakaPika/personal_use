@@ -43,7 +43,7 @@ export default {
   ],
   restDefence: {
     A: { shape: '2CB＋6番（2+1）', vs: '{B}のST＋2シャドー', a: 3, b: 3, note: '6番の両脇にシャドーが立つと、CBが前に出るたびに背後が空く。' },
-    B: { shape: '3CB＋2ボランチ（3+2）', vs: '{A}のCF＋2WG', a: 5, b: 3, note: '数は足りるが、WBが上がった背後へ{A}のWGが出ると、外CBが外へ引き出される。' },
+    B: { shape: '3CB＋2ボランチ（3+2）', vs: '{A}のCF＋2WG', a: 3, b: 5, note: '数は足りるが、WBが上がった背後へ{A}のWGが出ると、外CBが外へ引き出される。' },
   },
   duels: [
     { a: '6番', b: '2シャドー', text: '{A}の6番1人で2人のシャドーを見られるか。8番が戻るか、CBが前に出るか。', scene: 'oop-shadows' },

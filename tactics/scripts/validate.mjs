@@ -134,6 +134,12 @@ for (const m of matchupList) {
   for (const k of ['assumptions', 'exceptions', 'gameState', 'profiles']) if (!m.validity?.[k]?.length) err(`${w}: validity.${k} がない`);
   for (const k of ['superiority', 'freemen', 'interplay', 'duels', 'setPieces']) if (!m[k]?.length) err(`${w}: ${k} がない`);
   if (!m.restDefence?.A || !m.restDefence?.B) err(`${w}: restDefence がない`);
+  // a は常に A の人数、b は B の人数。shape に「（2+1）」とあれば、その合計が自チーム側の人数と一致するはず
+  for (const t of ['A', 'B']) {
+    const r = m.restDefence?.[t];
+    const mm = r?.shape?.match(/（(\d)\+(\d)）/);
+    if (mm && +mm[1] + +mm[2] !== (t === 'A' ? r.a : r.b)) err(`${w}: restDefence.${t} の人数（${r.a}v${r.b}）が shape「${r.shape}」と合わない（a は常に A、b は常に B）`);
+  }
   for (const s of m.superiority || []) {
     if (s.kind === 'numerical' && (typeof s.a !== 'number' || typeof s.b !== 'number')) err(`${w}: superiority「${s.zone}」に a/b がない`);
     if (s.kind !== 'numerical' && !['A', 'B'].includes(s.holder)) err(`${w}: superiority「${s.zone}」に holder がない`);
