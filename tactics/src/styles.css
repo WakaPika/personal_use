@@ -152,8 +152,8 @@ code { font-size: 0.9em; background: var(--surface-3); padding: 0 0.3em; border-
 
 .pbar { display: flex; align-items: center; padding: 8px 16px; }
 .pbar-t { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
-.pbar-t b { font-family: var(--font-num); font-size: 26px; font-weight: 700; letter-spacing: 0.01em; }
-.pbar-t span { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pbar-t b { font-family: var(--font-num); font-size: 26px; font-weight: 700; letter-spacing: 0.01em; white-space: nowrap; flex-shrink: 0; }
+.pbar-t span { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 
 .tabbar {
   position: fixed;
