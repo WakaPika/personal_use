@@ -96,7 +96,7 @@ for (const m of matchupList) {
       if (o.t === 'count' && o.label && typeof o.label === 'object' && (!o.label.A || !o.label.B)) err(`${w} ${sc.id}: count の視点別ラベルが不足`);
       if (o.t === 'count' && typeof o.label === 'string' && /前線|最終|第1|残り|背後|後方|プレス|ビルドアップ|カウンター/.test(o.label)) err(`${w} ${sc.id}: count ラベル「${o.label}」は視点で意味が変わるため {A, B} で書く`);
       if (o.t === 'count' || o.t === 'danger') {
-        for (const p of res.players) if (metersBetween(o.at, [p.x, p.y]) < 3.2) warn(`${w} ${sc.id}: ${o.t}「${o.label || ''}」が ${p.key} に近い`);
+        for (const p of res.players) if (metersBetween(o.at, [p.x, p.y]) < 3.2) warn(`${w} ${sc.id}: ${o.t}「${typeof o.label === 'object' ? o.label.A : o.label || ''}」が ${p.key} に近い`);
       }
     }
     if (sc.tab === 'overview' && m.quickWatch) {
