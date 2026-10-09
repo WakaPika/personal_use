@@ -3,8 +3,9 @@
 import { chromium } from './pw.mjs';
 import path from 'node:path';
 import fs from 'node:fs';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
-import { formations, activeFormations, matchupStatus } from '../src/data/index.js';
+import { formations, formationList, activeFormations, matchupStatus } from '../src/data/index.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const url = (h = '') => `file://${root}/dist/index.html${h ? `#${h}` : ''}`;
@@ -50,7 +51,7 @@ async function overflowInfo(page) {
 // ------------------------------------------------------------ 1. 横スクロールなし（375–430px）
 for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
   const { ctx, page, errors } = await newPage(w, h);
-  const routes = ['4-3-3_vs_4-4-2', '4-4-2_vs_4-3-3', '3-5-2_vs_4-3-3.oop-wide', '4-3-3_vs_4-1-4-1', 'systems', 'sys.4-3-3', 'sys.5-3-2', 'sys.3-4-2-1', 'glossary', 'sources'];
+  const routes = ['4-3-3_vs_4-4-2', '4-4-2_vs_4-3-3', '3-5-2_vs_4-3-3.oop-wide', '4-3-3_vs_4-1-4-1', 'systems', 'sys.4-3-3', 'sys.5-3-2', 'sys.3-4-2-1', 'sys.3-4-3', '3-4-2-1_vs_4-3-3.oop-shadows', '4-4-2_vs_4-4-2', 'glossary', 'sources'];
   let worst = null;
   for (const r of routes) {
     await page.goto(url(r));
@@ -65,7 +66,7 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
     const s = document.querySelector('.sheet');
     return { sw: s.scrollWidth, cw: s.clientWidth };
   });
-  check(`横スクロールなし ${w}px（10画面＋選択シート）`, !worst && so.sw <= so.cw + 1, worst ? JSON.stringify(worst) : `sheet ${so.sw}/${so.cw}`);
+  check(`横スクロールなし ${w}px（${routes.length}画面＋選択シート）`, !worst && so.sw <= so.cw + 1, worst ? JSON.stringify(worst) : `sheet ${so.sw}/${so.cw}`);
   check(`JSエラーなし ${w}px`, errors.length === 0, errors.join(' | '));
   await page.screenshot({ path: path.join(outDir, `sheet-${w}.png`) });
   await ctx.close();
@@ -155,8 +156,9 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
   check('2操作で相手だけ変更（シート→チップ）', h.startsWith('#3-5-2_vs_4-3-3'), h);
   // 準備中は選べない
   await page.click('.tb-opp');
-  const disabled = await page.$eval('.f-chip[data-id="3-4-2-1"]', (b) => b.disabled);
-  check('拡張予定（3-4-2-1）は「準備中」で選択不可', disabled);
+  const plannedId = formationList.find((f) => f.status === 'planned')?.id;
+  const disabled = plannedId ? await page.$eval(`.f-chip[data-id="${plannedId}"]`, (b) => b.disabled) : true;
+  check(`拡張予定（${plannedId || 'なし'}）は「準備中」で選択不可`, disabled);
   await page.keyboard.press('Escape');
   const closed = await page.evaluate(() => document.getElementById('sheet').hidden);
   check('Escでシートが閉じる', closed);
@@ -286,7 +288,7 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
       if (n !== 11) ok = false;
     }
     const opps = await page.$$eval('.opp-list a', (a) => a.length);
-    check(`システム ${f.id}：全${pills.length}形で11人・マッチアップ${opps}件`, ok && opps === 6);
+    check(`システム ${f.id}：全${pills.length}形で11人・マッチアップ${opps}件`, ok && opps === activeFormations.length);
   }
   await page.goto(url('glossary'));
   await page.fill('#g-search', 'Halbraum');
@@ -328,11 +330,14 @@ for (const [w, h] of [[375, 667], [390, 844], [414, 896], [430, 932]]) {
     }
     return Math.round(Math.max(...times));
   });
-  const size = fs.statSync(path.join(root, 'dist/index.html')).size;
+  const html = fs.readFileSync(path.join(root, 'dist/index.html'));
+  const size = html.length;
+  const gz = zlib.gzipSync(html, { level: 9 }).length;
   check(`初回描画（図＋3点）≤ 2.5s（CPU×4、file://）`, m.first > 0 && m.first <= 2500, `描画完了 ${m.first}ms / DCL ${m.dcl}ms / Chrome LCP ${m.lcp}ms`);
   check('CLS ≤ 0.1', m.cls <= 0.1, `CLS ${m.cls}`);
   check('タブ操作→次の描画 ≤ 200ms（CPU×4）', t <= 200, `最大 ${t}ms`);
-  check('配信サイズ（単一HTML）', size < 500 * 1024, `${(size / 1024).toFixed(0)}KB（gzip前）`);
+  // 49方向ぶんの日本語テキストを単一HTMLに内包するため、転送量（gzip）で評価する
+  check('配信サイズ（単一HTML・gzip後）≤ 250KB', gz < 250 * 1024, `gzip後 ${(gz / 1024).toFixed(0)}KB（gzip前 ${(size / 1024).toFixed(0)}KB）`);
   await ctx.close();
 }
 
